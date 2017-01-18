@@ -23,7 +23,7 @@ int main(int argc, const char * argv[]) {
     //reading data input from .txt file
     std::string::size_type sz;
     std::string line;
-    std::ifstream myfile ("/home/zahra/Desktop/training_data.txt");
+    std::ifstream myfile ("training_data.txt");
     
     std::size_t e = 0;
     while(e < number_of_experiments) {
