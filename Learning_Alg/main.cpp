@@ -8,12 +8,12 @@
 
 int main(int argc, const char * argv[]) {
 	std::size_t number_of_experiments = 41;
-	std::size_t number_of_features = 4;
+	std::size_t number_of_features = 3;
     std::size_t number_of_two_classes = 2;
-    std::size_t number_of_multi_classes = 4;
+    std::size_t number_of_multi_classes = 3;
 	double** experimental_results;
 	unsigned* targets;
-	double threshold = 0.1;
+	double threshold = 0.02;
 
 	experimental_results = new double*[number_of_experiments];
 	targets = new unsigned[number_of_experiments];
@@ -27,7 +27,10 @@ int main(int argc, const char * argv[]) {
     std::string line;
     //for two classes
     //std::ifstream myfile ("training_data_two_class.txt");
-    std::ifstream myfile ("training_data_multi_class.txt");
+    //for four classes
+    //std::ifstream myfile ("training_data_multi_class.txt");
+    //for three classes
+    std::ifstream myfile ("three_class.txt");
     
     std::size_t e = 0;
     while(e < number_of_experiments) {
@@ -47,7 +50,7 @@ int main(int argc, const char * argv[]) {
     	e++;    
     }
 
-
+    
     std::cout <<"\n ====================\n"<<std::endl;
     std::cout<<"The values of training data are : "<<std::endl;
 	//computing average and variance values for each feature
@@ -58,9 +61,10 @@ int main(int argc, const char * argv[]) {
 		std::cout<<targets[i]<<std::endl;
 	}
     std::cout <<"\n ====================\n"<<std::endl;
+    
 	
     //learning two classes
-    /*
+    /*   
     std::cout <<"\nBinary logistic regression model : \n"<<std::endl;
 	learning_network my_nw(number_of_experiments, number_of_features, 
 						      number_of_two_classes, threshold);
@@ -76,7 +80,7 @@ int main(int argc, const char * argv[]) {
     
 
     //learning multi classes
-    //std::cout <<"\nMulti-class logistic regression model : \n"<<std::endl;
+    //std::cout <<"\nMulti-class logistic regression model : \n"<<std::endl;        
     learning_network my_nw(number_of_experiments, number_of_features, 
                               number_of_multi_classes, threshold);
 
@@ -85,6 +89,7 @@ int main(int argc, const char * argv[]) {
     //std::cout<<"Learning has been done!\n"<<std::endl;
 
     double** weightsm = my_nw.retrieving_weights_multi_classes();
+    
     /*
     for(std::size_t k = 0; k < number_of_multi_classes; k++) {
         for(std::size_t f = 0; f < number_of_features; f++) {
