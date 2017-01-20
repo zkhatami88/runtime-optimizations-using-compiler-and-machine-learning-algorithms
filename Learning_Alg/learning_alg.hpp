@@ -3,6 +3,7 @@
 #include <iostream>
 
 #define MAX_DOUBLE (std::numeric_limits<double>::max())
+#define MIN_DOUBLE (std::numeric_limits<double>::min())
 
 class learning_network {
 
@@ -29,8 +30,8 @@ class learning_network {
 	double** Ihessian;							//inverse of hessian of E : (F * K) * (F * K)
 	double** delta_weight;						//used for updating weight : (F * K) * 1
 	double* sum_w_experimental_results;			//used for computing output : N 
-
-
+	unsigned* predicted_output;					//predicted class of each experimental results
+	unsigned* real_output;						//real output of each experimental results
 	
 	void inverse_mat(double** mat, double** inverse, unsigned size);
 	void get_cofactor(double **src, double **dest, unsigned p, unsigned q, unsigned size);
@@ -48,7 +49,7 @@ class learning_network {
 	void new_values_for_weightsb();
 	double computing_new_least_squared_err_two_class();	
 	void learning_weights_two_classes();
-	void printing_weights_two_class();
+	void printing_weights_two_class();	
 
 	/*
 	multi-class logistic regression 
@@ -71,6 +72,7 @@ class learning_network {
 	double computing_new_least_squared_err_multi_class();	
 	void updating_values_of_weights_multi_class();
 	void printing_weights_multi_class();
+	void estimating_output_class();
 	
 public:
 	learning_network(unsigned number_of_expr, unsigned number_of_ftrs, 
@@ -79,7 +81,7 @@ public:
 		number_of_features = number_of_ftrs;
 		number_of_classes = number_of_cls;
 		threshold = th;		
-	}
+	}	
 
 	//initilializer for two_class
 	void initilializer_two_class(double** expr_results, unsigned* target_expr){
@@ -112,8 +114,7 @@ public:
 				diag_weightsb[i][j] = 0.0;
 			}
 		}
-
-	}
+	}	
 
 	//initilializer for multi_class
 	void initilializer_multi_class(double** expr_results, unsigned* target_expr) {
@@ -128,6 +129,8 @@ public:
 		experimental_results = new double*[number_of_experiments];
 		targets_multi_class = new unsigned*[number_of_experiments];
 		outputsm = new double*[number_of_experiments];
+		predicted_output = new unsigned[number_of_experiments];
+		real_output = new unsigned[number_of_experiments];
 
 		for(unsigned i = 0; i < num_row; i++) {
 			weightsm[i] =  new double[1];
@@ -151,6 +154,9 @@ public:
 			for(unsigned f = 0; f < number_of_features; f++) {
 				experimental_results[i][f] = expr_results[i][f];
 			}
+
+			//initializing real outputs
+			real_output[i] = target_expr[i];
 		}
 
 		//initializing targets_multi_class
@@ -160,10 +166,13 @@ public:
 	//two-class logistic regression
 	void learning_two_classes();
 	double* retrieving_weights_two_classes();
+	void finalizing_two_classes();
 
 	//multi-class logistic regression
 	void learning_multi_classes();
 	double** retrieving_weights_multi_classes();
+	void finalizing_multi_classes();
+	void printing_predicted_output_classes();
 };
 
 
@@ -458,7 +467,6 @@ void learning_network::learning_weights_two_classes() {
 	}
 }
 
-//FIXME
 void learning_network::normalizing_weights_two_class() {
 	//normalizing all features, except first one, which is 1 for all
 	double* averages = new double[number_of_features];
@@ -490,16 +498,6 @@ void learning_network::normalizing_weights_two_class() {
 		}
 	}
 
-	std::cout<<"The values of training data are : "<<std::endl;
-	//computing average and variance values for each feature
-	for(unsigned i = 0; i < number_of_experiments; i++) {		
-		for(unsigned j = 0; j < number_of_features + 1; j++) {
-			std::cout<<experimental_results[i][j]<<" , ";
-		}
-		std::cout<<std::endl;
-	}
-
-
 	//releasing memory
 	delete[] averages;
 	delete[] averages_2;
@@ -513,6 +511,26 @@ void learning_network::learning_two_classes() {
 
 double* learning_network::retrieving_weights_two_classes() {
 	return weightsb;
+}
+
+void learning_network::finalizing_two_classes() {
+	//releasing memory
+	for(unsigned n = 0; n < number_of_experiments; n++) {
+		delete[] experimental_results[n];
+		delete[] diag_weightsb[n];
+		experimental_results[n] = nullptr;
+		diag_weightsb[n] = nullptr;
+	}		
+	delete[] experimental_results;
+	delete[] diag_weightsb;
+	delete[] weightsb;
+	delete[] new_weightsb;
+	delete[] targets_two_class;		
+	delete[] M;
+	weightsb = nullptr;
+	new_weightsb = nullptr;
+	targets_two_class = nullptr;
+	M = nullptr;
 }
 
 /*
@@ -732,4 +750,74 @@ void learning_network::learning_multi_classes() {
 
 double** learning_network::retrieving_weights_multi_classes() {
 	return weightsm;
+}
+
+//estimating class of each experimental results based on the computed weights
+void learning_network::estimating_output_class() {
+	for(unsigned n = 0; n < number_of_experiments; n++) {
+		double prob = MIN_DOUBLE;
+		for(unsigned k = 0; k < number_of_classes; k++) {
+			double out = output_nk(n, k);
+			if(prob < outputsm[n][k]) {
+				predicted_output[n] = k;
+				prob = outputsm[n][k];
+			}
+		}
+	}
+	std::cout<<std::endl;
+}
+
+void learning_network::printing_predicted_output_classes(){
+	estimating_output_class();
+	unsigned num_err = 0;
+	for(unsigned n = 0; n < number_of_experiments; n++) {
+		std::cout<<"\n class["<<n<<"] =\t"<<predicted_output[n]<<"\t"<<real_output[n];
+		if(predicted_output[n] != real_output[n]){
+			num_err++;
+		}
+	}
+	std::cout<<"\n number of error predicted is\t"<<num_err<<std::endl;
+}
+
+void learning_network::finalizing_multi_classes() {
+	//relasing memory
+	for(unsigned n = 0; n < number_of_experiments; n++) {
+		delete[] experimental_results[n];
+		delete[] targets_multi_class[n];
+		delete[] outputsm[n];
+		experimental_results[n] = nullptr;
+		targets_multi_class[n] = nullptr;
+		outputsm[n] = nullptr;
+	}
+	delete[] experimental_results;
+	delete[] targets_multi_class;
+	delete[] outputsm;
+
+	unsigned num_row = number_of_features * number_of_classes;
+	for(unsigned r = 0; r < num_row; r++) {
+		delete[] weightsm[r];
+		delete[] new_weightsm[r];
+		delete[] gradient[r];
+		delete[] delta_weight[r];
+		delete[] hessian[r];
+		delete[] Ihessian[r];
+		weightsm[r] = nullptr;
+		new_weightsm[r] = nullptr;
+		gradient[r] = nullptr;
+		delta_weight[r] = nullptr;
+		hessian[r] = nullptr;
+		Ihessian[r] = nullptr;
+	}
+	delete[] weightsm;
+	delete[] new_weightsm;
+	delete[] gradient;
+	delete[] delta_weight;
+	delete[] hessian;
+	delete[] Ihessian;
+	delete[] sum_w_experimental_results;
+	delete[] predicted_output;
+	delete[] real_output;
+	real_output = nullptr;
+	predicted_output = nullptr;
+	sum_w_experimental_results = nullptr;
 }

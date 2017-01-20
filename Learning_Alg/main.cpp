@@ -13,7 +13,7 @@ int main(int argc, const char * argv[]) {
     std::size_t number_of_multi_classes = 3;
 	double** experimental_results;
 	unsigned* targets;
-	double threshold = 0.02;
+	double threshold = 0.04;
 
 	experimental_results = new double*[number_of_experiments];
 	targets = new unsigned[number_of_experiments];
@@ -72,12 +72,8 @@ int main(int argc, const char * argv[]) {
     my_nw.initilializer_two_class(experimental_results, targets);
 	my_nw.learning_two_classes();
 	std::cout<<"Learning has been done!\n"<<std::endl;
-
-	double* weightsb = my_nw.retrieving_weights_two_classes();
-	for(std::size_t i = 0; i < number_of_features + 1; i++) {
-		std::cout<<"weights[%i] = "<<weightsb[i]<<i<<std::endl;
-	}*/
-    
+    my_nw.finalizing_two_classes();
+    */    
 
     //learning multi classes
     //std::cout <<"\nMulti-class logistic regression model : \n"<<std::endl;        
@@ -86,18 +82,11 @@ int main(int argc, const char * argv[]) {
 
     my_nw.initilializer_multi_class(experimental_results, targets);
     my_nw.learning_multi_classes();
-    //std::cout<<"Learning has been done!\n"<<std::endl;
-
+    std::cout<<"\nLearning has been done!\n"<<std::endl;
     double** weightsm = my_nw.retrieving_weights_multi_classes();
-    
-    /*
-    for(std::size_t k = 0; k < number_of_multi_classes; k++) {
-        for(std::size_t f = 0; f < number_of_features; f++) {
-            std::size_t offset = k * number_of_features + f;
-            std::cout<<"weights["<<k<<"]["<<f<<"] = "<<weightsm[offset][0]<<"\t";
-        }
-        std::cout<<std::endl;
-    }*/
+    std::cout<<"\nThe predicated class for each experimental results are: "<<std::endl;
+    my_nw.printing_predicted_output_classes();
+    my_nw.finalizing_multi_classes();
 
 	return 0;
 }
