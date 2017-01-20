@@ -7,16 +7,16 @@
 #include "learning_alg.hpp"
 
 int main(int argc, const char * argv[]) {
-	std::size_t number_of_experiments = 41;
+	std::size_t number_of_experiments = 82;
 	std::size_t number_of_features = 3;
     std::size_t number_of_two_classes = 2;
     std::size_t number_of_multi_classes = 3;
 	double** experimental_results;
-	unsigned* targets;
+	int* targets;
 	double threshold = 0.04;
 
 	experimental_results = new double*[number_of_experiments];
-	targets = new unsigned[number_of_experiments];
+	targets = new int[number_of_experiments];
 
 	for(std::size_t i = 0; i < number_of_experiments; i++) {
     	experimental_results[i] = new double[number_of_features];
@@ -30,7 +30,7 @@ int main(int argc, const char * argv[]) {
     //for four classes
     //std::ifstream myfile ("training_data_multi_class.txt");
     //for three classes
-    std::ifstream myfile ("three_class.txt");
+    std::ifstream myfile ("three_class2.txt");
     
     std::size_t e = 0;
     while(e < number_of_experiments) {
@@ -85,7 +85,7 @@ int main(int argc, const char * argv[]) {
     std::cout<<"\nLearning has been done!\n"<<std::endl;
     double** weightsm = my_nw.retrieving_weights_multi_classes();
     std::cout<<"\nThe predicated class for each experimental results are: "<<std::endl;
-    my_nw.printing_predicted_output_classes();
+    //my_nw.printing_predicted_output_classes();
     my_nw.finalizing_multi_classes();
 
 	return 0;
