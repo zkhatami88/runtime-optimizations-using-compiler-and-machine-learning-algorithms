@@ -177,7 +177,7 @@ void multinomial_regression_model_gradient_descent::updating_values_of_weights_m
 void multinomial_regression_model_gradient_descent::printing_weights_multi_class() {
 	for(std::size_t f = 0; f < number_of_features; f++) {
 		for(std::size_t k = 0; k < number_of_classes; k++) {
-			std::cout<<weightsm(f, k)<<"\t";
+			std::cout<<"weightsm["<<f<<"]["<<k<<"]="<<weightsm(f, k)<<"   ";
 		}
 		std::cout<<std::endl;
 	}
@@ -208,10 +208,11 @@ void multinomial_regression_model_gradient_descent::learning_weights_multi_class
 		computing_all_output();
 		estimating_output_multiclass();
 		least_squared_err = computing_new_least_squared_err_multi_class();
-		std::cout<<"("<<itr<<")"<<"Least_squared_err =\t" << least_squared_err<<std::endl;		
-		printing_weights_multi_class();		
+		//std::cout<<"("<<itr<<")"<<"Least_squared_err =\t" << least_squared_err<<std::endl;		
+		//printing_weights_multi_class();		
 		itr++;
 	}
+	std::cout<<"("<<itr<<") => "<<"Least_squared_err =\t" << least_squared_err<<std::endl;
 }
 
 void multinomial_regression_model_gradient_descent::normalizing_weights_multi_class() {
@@ -256,16 +257,17 @@ void multinomial_regression_model_gradient_descent::learning_multi_classes() {
 }
 
 MatrixXf& multinomial_regression_model_gradient_descent::retrieving_weights_multi_classes() {
+	printing_weights_multi_class();
 	return weightsm;
 }
 
 void multinomial_regression_model_gradient_descent::printing_predicted_output_multi_class(){
 	std::size_t num_err = 0;
 	for(std::size_t n = 0; n < number_of_experiments; n++) {
-		std::cout<<"\n class["<<n<<"] =\t"<<predicted_output_multi_class[n]<<"\t"<<real_output[n];
+		//std::cout<<"\n class["<<n<<"] =\t"<<predicted_output_multi_class[n]<<"\t"<<real_output[n];
 		if(predicted_output_multi_class[n] != real_output[n]){
 			num_err++;
 		}
 	}
-	std::cout<<"\n number of error predicted is\t"<<num_err<<std::endl;
+	std::cout<<"\n number of error predicted is\t"<<num_err<<" out of "<<number_of_experiments<<std::endl;
 }

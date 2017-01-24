@@ -166,9 +166,9 @@ void learning_binary_regression_model::learning_weights_two_classes() {
 		updating_values_of_M_and_diag_weights();
 		new_values_for_weightsb();
 		least_squared_err = computing_new_least_squared_err_two_class();
-		std::cout<<"\n("<<itr<<"),"<<"Least_squared_err =\t" << least_squared_err<<std::endl;
+		//std::cout<<"\n("<<itr<<"),"<<"Least_squared_err =\t" << least_squared_err<<std::endl;
 		updating_values_of_weights_two_class();		
-		printing_weights_two_class();
+		//printing_weights_two_class();
 		estimating_output_two_class();
 		itr++;		
 	}
@@ -218,13 +218,18 @@ void learning_binary_regression_model::learning_two_classes() {
 	learning_weights_two_classes();
 }
 
-MatrixXf& learning_binary_regression_model::retrieving_weights_two_classes() {	
+MatrixXf& learning_binary_regression_model::retrieving_weights_two_classes() {
+	printing_weights_two_class();
 	return weightsb;
 }
 
-void learning_binary_regression_model::printing_predicted_output_two_class() {
-	estimating_output_two_class();
+void learning_binary_regression_model::printing_predicted_output_two_class() {	
+	std::size_t num_err = 0;
 	for(std::size_t n = 0; n < number_of_experiments; n++) {
-		std::cout<<predicted_output_two_class[n]<<","<<targets_two_class(n, 0)<<std::endl;
+		if(predicted_output_two_class[n] != targets_two_class(n, 0)) {
+			num_err++;
+		}
+		//std::cout<<predicted_output_two_class[n]<<","<<targets_two_class(n, 0)<<std::endl;
 	}
+	std::cout<<"\n number of error predicted is\t"<<num_err<<" out of "<<number_of_experiments<<std::endl;
 }
