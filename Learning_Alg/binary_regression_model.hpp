@@ -2,10 +2,7 @@
 #include <math.h>
 #include <iostream>
 #include <stdlib.h>
-#include <time.h> 
-/*
-computing inverse of matrix
-*/
+#include <time.h>
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <Eigen/Eigen>
@@ -18,7 +15,6 @@ class learning_binary_regression_model {
 
 	std::size_t number_of_experiments;
 	std::size_t number_of_features;
-	std::size_t number_of_classes;
 	float threshold; 							//the convergence for estimating the final weights
 	MatrixXf experimental_results; 				//the experimental values of the features of the training data	
 	MatrixXf weightsb; 							//weights of our learning network
@@ -40,10 +36,9 @@ class learning_binary_regression_model {
 
 public:
 	learning_binary_regression_model(std::size_t number_of_expr, std::size_t number_of_ftrs, 
-						std::size_t number_of_cls, float th, float** expr_results, int* target_expr) {
+									float th, float** expr_results, int* target_expr) {
 		number_of_experiments = number_of_expr;
 		number_of_features = number_of_ftrs;
-		number_of_classes = number_of_cls;
 		threshold = th;
 
 		weightsb = Eigen::MatrixXf::Random((number_of_features +  1), 1);
@@ -78,7 +73,7 @@ public:
 
 	//two-class logistic regression
 	void learning_two_classes();
-	float* retrieving_weights_two_classes();
+	MatrixXf& retrieving_weights_two_classes();
 	void finalizing_two_classes();
 	void printing_predicted_output_two_class();
 };
@@ -223,12 +218,8 @@ void learning_binary_regression_model::learning_two_classes() {
 	learning_weights_two_classes();
 }
 
-float* learning_binary_regression_model::retrieving_weights_two_classes() {
-	float* exported_results = new float[number_of_features + 1];
-	for(std::size_t f = 0; f < number_of_features + 1; f++) {
-		exported_results[f] = weightsb(f, 0);
-	}
-	return exported_results;
+MatrixXf& learning_binary_regression_model::retrieving_weights_two_classes() {	
+	return weightsb;
 }
 
 void learning_binary_regression_model::printing_predicted_output_two_class() {
