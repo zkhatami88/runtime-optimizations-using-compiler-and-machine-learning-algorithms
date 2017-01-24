@@ -47,7 +47,7 @@ class multinomial_regression_model_gradient_descent {
 	
 public:
 	multinomial_regression_model_gradient_descent(std::size_t number_of_expr, std::size_t number_of_ftrs, std::size_t number_of_cls, 
-											float th, MatrixXf expr_results, int* target_expr) {
+											float th, float** expr_results, int* target_expr) {
 		number_of_experiments = number_of_expr;
 		number_of_features = number_of_ftrs;
 		number_of_classes = number_of_cls;
@@ -74,9 +74,12 @@ public:
 		}
 
 		//initializing experimental_results
-		experimental_results = expr_results;
+		// /experimental_results = expr_results;
 
-		for(std::size_t i = 0; i < number_of_experiments; i++) {			
+		for(std::size_t i = 0; i < number_of_experiments; i++) {
+		for(std::size_t f = 0; f < number_of_features; f++) {
+				experimental_results(i, f) = expr_results[i][f];
+			}			
 			//initializing real outputs
 			real_output[i] = target_expr[i];
 		}

@@ -54,19 +54,19 @@ public:
 			weightsb(i, 0) = 1.0;
 		}
 
-		for(std::size_t i = 0; i < number_of_experiments; i++) {
-			targets_two_class(i, 0) = (float)target_expr[i];
-			M(i, 0) = 0.0;
+		for(std::size_t n = 0; n < number_of_experiments; n++) {
+			targets_two_class(n, 0) = (float)target_expr[n];
+			M(n, 0) = 0.0;
 
 			//initializing experimental_results
-			experimental_results(i, 0) = 1.0; // 1 + wf + ....
-			for(std::size_t j = 1; j < number_of_features + 1; j++) {
-				experimental_results(i, j) = expr_results[i][j - 1];
+			experimental_results(n, 0) = 1.0; // 1 + wf + ....
+			for(std::size_t f = 1; f < number_of_features + 1; f++) {
+				experimental_results(n, f) = expr_results[n][f - 1];
 			}
 
 			//initializing diag_weightsb
 			for(std::size_t j = 0; j < number_of_experiments; j++) {
-				diag_weightsb(i, j) = 0.0;
+				diag_weightsb(n, j) = 0.0;
 			}
 		}
 	}
@@ -149,7 +149,7 @@ void learning_binary_regression_model::estimating_output_two_class(){
 		for(std::size_t f = 0; f < number_of_features + 1; f++) {
 			temp += weightsb(f, 0) * experimental_results(n, f);
 		}
-		if(temp >= 0) {
+		if(temp > 0) {
 			predicted_output_two_class[n] = 1;
 		}
 		else {

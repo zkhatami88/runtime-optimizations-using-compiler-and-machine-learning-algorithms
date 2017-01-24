@@ -11,7 +11,6 @@
 using namespace Eigen;
 
 #define MAX_FLOAT (std::numeric_limits<float>::max())
-#define MIN_FLOAT (std::numeric_limits<float>::min())
 
 class multinomial_regression_model_newton_raphson {
 
@@ -19,7 +18,6 @@ class multinomial_regression_model_newton_raphson {
 	std::size_t number_of_features;
 	std::size_t number_of_classes;
 	float threshold; 							//the convergence for estimating the final weights
-	float eta;									//used for gradient descent method
 	MatrixXf experimental_results; 				//the experimental values of the features of the training data	
 	MatrixXf experimental_results_trans;		//transpose of experimental_results
 	MatrixXf weightsm; 							//weights of our learning network : F * K
@@ -41,6 +39,8 @@ class multinomial_regression_model_newton_raphson {
 	int eye_kj(std::size_t k, std::size_t j);
 	void computing_all_output();
 	void computing_all_gradient();
+	void computing_heassian_kj(std::size_t k, std::size_t j);
+	void computing_all_hessian();
 	void learning_weights_multi_classes();
 	void new_values_for_weightsm();
 	float computing_new_least_squared_err_multi_class();	
@@ -50,12 +50,11 @@ class multinomial_regression_model_newton_raphson {
 	
 public:
 	multinomial_regression_model_newton_raphson(std::size_t number_of_expr, std::size_t number_of_ftrs, std::size_t number_of_cls, 
-											float th, MatrixXf expr_results, int* target_expr) {
+											float th, float** expr_results, int* target_expr) {
 		number_of_experiments = number_of_expr;
 		number_of_features = number_of_ftrs;
 		number_of_classes = number_of_cls;
-		threshold = th;
-		eta = 0.001;	
+		threshold = th;	
 	
 		sum_w_experimental_results = MatrixXf::Random(number_of_experiments, 1);
 		
@@ -79,16 +78,19 @@ public:
 		//initializing weights
 		for(std::size_t f = 0; f < number_of_features; f++) {
 			for(std::size_t k = 0; k < number_of_classes; k++) {
-				weightsm(f, k) = 0.1;
+				weightsm(f, k) = 1;
 			}
 		}
 
 		//initializing experimental_results
-		experimental_results = expr_results;
+		//experimental_results = expr_results;
 
-		for(std::size_t i = 0; i < number_of_experiments; i++) {			
+		for(std::size_t n = 0; n < number_of_experiments; n++) {
+			for(std::size_t f = 0; f < number_of_features; f++) {
+				experimental_results(n, f) = expr_results[n][f];
+			}			
 			//initializing real outputs
-			real_output[i] = target_expr[i];
+			real_output[n] = target_expr[n];
 		}
 
 		experimental_results_trans = experimental_results.transpose();
@@ -158,22 +160,73 @@ void multinomial_regression_model_newton_raphson::computing_all_gradient(){
 			gradient.col(k) += (outputsm(n, k) - targets_multi_class(n, k)) * experimental_results_trans.col(n);
 		}
 	}
-}
-
-void multinomial_regression_model_newton_raphson::new_values_for_weightsm() {	
-	new_weightsm = weightsm	- eta * gradient;
-}
-
-//computing leas squares err
-float multinomial_regression_model_newton_raphson::computing_new_least_squared_err_multi_class() {	
-	std::size_t num_err = 0;
-	for(std::size_t n = 0; n < number_of_experiments; n++) {
-		if(predicted_output_multi_class[n] != real_output[n]) {
-			num_err++;
-		}		
+	for(std::size_t f = 0; f < number_of_features; f++) {
+		for(std::size_t k = 0; k < number_of_classes; k++){
+			std::cout<<gradient(f, k)<<",";
+		}
+		std::cout<<"\n";
 	}
-	float prec = float(num_err) / number_of_experiments;
-	return prec;
+}
+
+void multinomial_regression_model_newton_raphson::computing_heassian_kj(std::size_t k, std::size_t j) {
+	std::size_t row_offset = k * number_of_features;
+	std::size_t col_offset = j * number_of_features;
+
+	
+	for(std::size_t r = 0; r < number_of_features; r++) {
+		for(std::size_t c = 0; c < number_of_features; c++) {
+			std::size_t row = row_offset + r;
+			std::size_t col = col_offset + c;
+			hessian(row, col) = 0.0;
+			for(std::size_t n = 0; n < number_of_experiments; n++) {
+				hessian(row, col) += outputsm(n, k) * (eye_kj(k, j) - outputsm(n, j)) * experimental_results(n, r) * experimental_results(n, c);
+			}
+			hessian(row, col) = (-1.0) * hessian(row, col);
+		}
+	}
+}
+
+void multinomial_regression_model_newton_raphson::computing_all_hessian() {
+	for(std::size_t k = 0; k < number_of_classes; k++) {
+		for(std::size_t j = 0; j < number_of_classes; j++) {
+			computing_heassian_kj(k, j);
+		}
+	}
+}
+
+void multinomial_regression_model_newton_raphson::new_values_for_weightsm() {
+	Ihessian = hessian.inverse();
+	std::size_t size = number_of_classes * number_of_features;
+	
+	//computing delta_weight
+	std::size_t r = 0;
+	std::size_t counter_row = 0;
+	std::size_t counter_col = 0;
+
+	while(r < size) {
+		delta_weight(counter_row, counter_col) = 0.0;		
+		std::size_t h = 0;
+		std::size_t which_class = 0;
+		std::size_t counter = 0;
+		while(h < size) {
+			while(counter < number_of_features) {
+					delta_weight(counter_row, counter_col) += hessian(r, h) * gradient(counter, which_class);
+					counter++;
+					h++;
+				}
+				counter = 0;
+				which_class++;
+		}
+		counter_row++;
+		r++;
+		if(counter_row == number_of_features) {
+			counter_row = 0;
+			counter_col++;
+		}
+	}
+
+	//updating weights
+	new_weightsm = weightsm	- delta_weight;
 }
 
 //updating weights
@@ -188,14 +241,13 @@ void multinomial_regression_model_newton_raphson::printing_weights_multi_class()
 		}
 		std::cout<<std::endl;
 	}
-	std::cout<<"\n --------------------\n";
 }
 
 //estimating class of each experimental results based on the computed weights
 void multinomial_regression_model_newton_raphson::estimating_output_multiclass() {	
 	for(std::size_t n = 0; n < number_of_experiments; n++) {
-		float prob = MIN_FLOAT;
-		for(std::size_t k = 0; k < number_of_classes; k++) {
+		float prob = outputsm(n, 0);
+		for(std::size_t k = 1; k < number_of_classes; k++) {
 			if(prob < outputsm(n, k)) {
 				predicted_output_multi_class[n] = k;
 				prob = outputsm(n, k);
@@ -204,13 +256,28 @@ void multinomial_regression_model_newton_raphson::estimating_output_multiclass()
 	}
 }
 
+//computing leas squares err
+float multinomial_regression_model_newton_raphson::computing_new_least_squared_err_multi_class() {	
+	std::size_t num_err = 0;
+	for(std::size_t n = 0; n < number_of_experiments; n++) {
+		if(predicted_output_multi_class[n] != real_output[n]) {
+			num_err++;
+		}		
+	}
+	float prec = float(num_err) / number_of_experiments;
+	return prec;
+}
+
+
 //updating weights till error meets the defined threshold
 void multinomial_regression_model_newton_raphson::learning_weights_multi_classes() {
 	float least_squared_err = MAX_FLOAT;
 	std::size_t itr = 1;
-	while(threshold < least_squared_err) {		
-		computing_all_gradient();				
-		new_values_for_weightsm();				
+	while(threshold < least_squared_err) {
+		std::cout<<"\n========================================\n";
+		computing_all_gradient();
+		computing_all_hessian();
+		new_values_for_weightsm();		
 		updating_values_of_weights_multi_class();
 		computing_all_output();
 		estimating_output_multiclass();
@@ -218,6 +285,7 @@ void multinomial_regression_model_newton_raphson::learning_weights_multi_classes
 		std::cout<<"("<<itr<<")"<<"Least_squared_err =\t" << least_squared_err<<std::endl;		
 		printing_weights_multi_class();		
 		itr++;
+		std::cout<<"\n========================================\n";
 	}
 }
 
