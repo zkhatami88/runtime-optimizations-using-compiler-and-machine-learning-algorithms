@@ -44,6 +44,7 @@ class multinomial_regression_model_gradient_descent {
 	void updating_values_of_weights_multi_class();
 	void printing_weights_multi_class();
 	void estimating_output_multiclass();
+	void printing_computed_values(std::size_t row, std::size_t col, MatrixXf& mat);
 	
 public:
 	multinomial_regression_model_gradient_descent(std::size_t number_of_expr, std::size_t number_of_ftrs, std::size_t number_of_cls, 
@@ -73,18 +74,14 @@ public:
 			}
 		}
 
-		//initializing experimental_results
-		// /experimental_results = expr_results;
-
 		for(std::size_t i = 0; i < number_of_experiments; i++) {
-		for(std::size_t f = 0; f < number_of_features; f++) {
+			//initializing experimental_results
+			for(std::size_t f = 0; f < number_of_features; f++) {
 				experimental_results(i, f) = expr_results[i][f];
 			}			
 			//initializing real outputs
 			real_output[i] = target_expr[i];
-		}
-
-		experimental_results_trans = experimental_results.transpose();
+		}	
 		
 		//initializing targets_multi_class
 		convert_target_to_binary(target_expr, targets_multi_class);
@@ -95,6 +92,29 @@ public:
 	MatrixXf& retrieving_weights_multi_classes();
 	void printing_predicted_output_multi_class();
 };
+
+//it prints computed values : for testing
+void multinomial_regression_model_gradient_descent::printing_computed_values(std::size_t row, std::size_t col, MatrixXf& mat) {
+	if(row != 0 && col != 0) {
+		for(std::size_t r = 0; r < row; r++) {
+			for(std::size_t c = 0; c < col; c++) {
+				printf("%f, ", mat(r, c));
+			}
+			std::cout<<std::endl;
+		}
+	}
+	else if(row == 0 && col != 0){
+		for(std::size_t c = 0; c < col; c++) {
+			printf("%f, ", mat(0, c));
+		}
+	}
+	else {
+		for(std::size_t r = 0; r < row; r++) {
+			printf("%f, ", mat(r, 0));
+		}
+	}
+	std::cout<<std::endl;
+}
 
 void multinomial_regression_model_gradient_descent::convert_target_to_binary(int* target_src, MatrixXf& targets_multi_class) {
 	for(std::size_t n = 0; n < number_of_experiments; n++) {
@@ -175,12 +195,7 @@ void multinomial_regression_model_gradient_descent::updating_values_of_weights_m
 }
 
 void multinomial_regression_model_gradient_descent::printing_weights_multi_class() {
-	for(std::size_t f = 0; f < number_of_features; f++) {
-		for(std::size_t k = 0; k < number_of_classes; k++) {
-			std::cout<<"weightsm["<<f<<"]["<<k<<"]="<<weightsm(f, k)<<"   ";
-		}
-		std::cout<<std::endl;
-	}
+	printing_computed_values(number_of_features, number_of_classes, weightsm);
 	std::cout<<"\n --------------------\n";
 }
 
@@ -208,8 +223,8 @@ void multinomial_regression_model_gradient_descent::learning_weights_multi_class
 		computing_all_output();
 		estimating_output_multiclass();
 		least_squared_err = computing_new_least_squared_err_multi_class();
-		//std::cout<<"("<<itr<<")"<<"Least_squared_err =\t" << least_squared_err<<std::endl;		
-		//printing_weights_multi_class();		
+		std::cout<<"("<<itr<<")"<<"Least_squared_err =\t" << least_squared_err<<std::endl;		
+		printing_weights_multi_class();		
 		itr++;
 	}
 	std::cout<<"("<<itr<<") => "<<"Least_squared_err =\t" << least_squared_err<<std::endl;
@@ -253,6 +268,7 @@ void multinomial_regression_model_gradient_descent::normalizing_weights_multi_cl
 
 void multinomial_regression_model_gradient_descent::learning_multi_classes() {
 	normalizing_weights_multi_class();
+	experimental_results_trans = experimental_results.transpose();
 	learning_weights_multi_classes();
 }
 
@@ -263,10 +279,10 @@ MatrixXf& multinomial_regression_model_gradient_descent::retrieving_weights_mult
 
 void multinomial_regression_model_gradient_descent::printing_predicted_output_multi_class(){
 	std::size_t num_err = 0;
-	for(std::size_t n = 0; n < number_of_experiments; n++) {
-		//std::cout<<"\n class["<<n<<"] =\t"<<predicted_output_multi_class[n]<<"\t"<<real_output[n];
+	for(std::size_t n = 0; n < number_of_experiments; n++) {		
 		if(predicted_output_multi_class[n] != real_output[n]){
 			num_err++;
+			std::cout<<"\n ["<<n<<"] =\t"<<predicted_output_multi_class[n]<<"\t"<<real_output[n];
 		}
 	}
 	std::cout<<"\n number of error predicted is\t"<<num_err<<" out of "<<number_of_experiments<<std::endl;
