@@ -19,7 +19,6 @@ class multinomial_regression_model_gradient_descent {
 	std::size_t number_of_features;
 	std::size_t number_of_classes;
 	float threshold; 							//the convergence for estimating the final weights
-	float eta;									//used for gradient descent method
 	MatrixXf experimental_results; 				//the experimental values of the features of the training data	
 	MatrixXf experimental_results_trans;		//transpose of experimental_results
 	MatrixXf weightsm; 							//weights of our learning network : F * K
@@ -53,7 +52,6 @@ public:
 		number_of_features = number_of_ftrs;
 		number_of_classes = number_of_cls;
 		threshold = th;
-		eta = 0.001;	
 	
 		sum_w_experimental_results = MatrixXf::Random(number_of_experiments, 1);		
 		weightsm = MatrixXf::Random(number_of_features, number_of_classes);
