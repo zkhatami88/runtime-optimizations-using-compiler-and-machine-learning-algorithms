@@ -479,33 +479,43 @@ namespace hpx { namespace parallel { HPX_INLINE_NAMESPACE(v1)
 #endif
         )>
     typename util::detail::algorithm_result<ExPolicy, InIter>::type
-    for_each(hpx::parallel::info_container<Data> info, ExPolicy && policy, 
+    adaptive_for_each(hpx::parallel::features_container<Data> features_info,
+                hpx::parallel::weights_container<Data> weights_info,
+                ExPolicy && policy, 
                 InIter first, InIter last, F && f,
                 Proj && proj = Proj())
     {
-        std::cout<<"\n hey! this is adaptive_for_each loop \n";
         static_assert(
             (hpx::traits::is_input_iterator<InIter>::value),
             "Requires at least input iterator.");
 
         typedef hpx::traits::is_segmented_iterator<InIter> is_segmented;
 
-        //choosing the most optimum execution policy for the current loop:
-        auto seq_policy = hpx::parallel::seq;
-        auto par_policy = hpx::parallel::par;
+        //extracting parameters of the current policy:
+        auto param = policy.parameters();
+
+        //extracting executors of the current policy:
+        auto exec = policy.executor();
+
+        //choosing the most optimum execution policy for the current loop,
+        //while keeping the parameters and executors of the current policy:
+        auto seq_policy = hpx::parallel::seq.with(param);
+        auto par_policy = hpx::parallel::par.with(param);
 
         // Initially clang assignes the value of modified_features[0] 
         // and modified_features[4] to be 0, which are the number of threads
         // and number of iterations. These values will be determined
-        // at runtime with for_each:
-        auto& modified_features = info.get_features();
+        // at runtime with adaptive_for_each:
+        auto& modified_features = features_info.get_features();
         modified_features[0] = hpx::get_os_thread_count();
         modified_features[4] = std::distance(first, last);
 
-        bool final_policy = info.execution_policy_determination(modified_features);
-        std::cout<<"\n final_policy is : "<<final_policy<<"\n";
+        //getting values of computed weights of the learning network
+        auto& weights = weights_info.get_weights();
 
-        //FIXME: how to extract executors from policy
+        // final_policy will be determined based on the result of the cost function of 
+        // binary regression model
+        bool final_policy = features_info.execution_policy_determination(modified_features, weights);
 
         if(!final_policy) {
             return detail::for_each_(

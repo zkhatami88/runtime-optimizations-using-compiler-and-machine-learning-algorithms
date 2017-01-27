@@ -99,9 +99,9 @@ void printing_input_data_value(std::size_t number_of_experiments, std::size_t nu
 }
 
 int main(int argc, const char * argv[]) {	
-	float threshold = 0.1;
+	float threshold = 0.2;
     std::string line;
-
+    
     //learning two classes    
     std::cout <<"\nBinary logistic regression model : \n"<<std::endl;
 
@@ -138,7 +138,7 @@ int main(int argc, const char * argv[]) {
 	my_nw.learning_two_classes();
 	std::cout<<"Learning has been done!\n"<<std::endl;
     std::cout<<"\nThe predicated weights for each features are: "<<std::endl;
-    MatrixXf weights = my_nw.retrieving_weights_two_classes();
+    my_nw.retrieving_weights_two_classes_into_txt_file();
     my_nw.printing_predicted_output_two_class();
     
     /*
@@ -150,9 +150,9 @@ int main(int argc, const char * argv[]) {
     getline(myfile, line);
     std::stringstream ss(line);
     std::string str;
-    getline(ss, str, '\t');
+    getline(ss, str, ' ');
     std::size_t number_of_experiments_multi_class = std::stoi(str);
-    getline(ss, str, '\t');
+    getline(ss, str, ' ');
     std::size_t number_of_features_multi_class = std::stoi(str);
 
     //number of classes:
@@ -184,8 +184,8 @@ int main(int argc, const char * argv[]) {
     my_nw.learning_multi_classes();
     std::cout<<"\nLearning has been done!\n"<<std::endl;
     std::cout<<"\nThe predicated weights for each features are: "<<std::endl;
-    MatrixXf weights = my_nw.retrieving_weights_multi_classes();
-    my_nw.printing_predicted_output_multi_class();   
+    my_nw.retrieving_weights_multi_classes_into_text_file();
+    my_nw.printing_predicted_output_multi_class();
     */
 	return 0;
 }

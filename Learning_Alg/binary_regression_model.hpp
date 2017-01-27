@@ -76,7 +76,7 @@ public:
 
 	//two-class logistic regression
 	void learning_two_classes();
-	MatrixXf& retrieving_weights_two_classes();
+	void retrieving_weights_two_classes_into_txt_file();
 	void finalizing_two_classes();
 	void printing_predicted_output_two_class();
 };
@@ -281,9 +281,13 @@ void learning_binary_regression_model::learning_two_classes() {
 	learning_weights_two_classes();
 }
 
-MatrixXf& learning_binary_regression_model::retrieving_weights_two_classes() {
-	printing_weights_two_class();
-	return weightsb;
+//writes computed weight into the text file
+void learning_binary_regression_model::retrieving_weights_two_classes_into_txt_file() {
+	std::ofstream outputFile("weights.txt");
+	for(std::size_t w = 0; w < number_of_features; w++) {
+		outputFile<<weightsb(w, 0)<<" ";
+	}
+	outputFile<<weightsb(number_of_features, 0);
 }
 
 void learning_binary_regression_model::printing_predicted_output_two_class() {

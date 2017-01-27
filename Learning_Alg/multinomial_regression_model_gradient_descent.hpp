@@ -19,6 +19,7 @@ class multinomial_regression_model_gradient_descent {
 	std::size_t number_of_features;
 	std::size_t number_of_classes;
 	float threshold; 							//the convergence for estimating the final weights
+	float eta;
 	MatrixXf experimental_results; 				//the experimental values of the features of the training data	
 	MatrixXf experimental_results_trans;		//transpose of experimental_results
 	MatrixXf weightsm; 							//weights of our learning network : F * K
@@ -52,6 +53,7 @@ public:
 		number_of_features = number_of_ftrs;
 		number_of_classes = number_of_cls;
 		threshold = th;
+		eta = 0.001;
 	
 		sum_w_experimental_results = MatrixXf::Random(number_of_experiments, 1);		
 		weightsm = MatrixXf::Random(number_of_features, number_of_classes);
@@ -87,7 +89,7 @@ public:
 	}
 
 	void learning_multi_classes();
-	MatrixXf& retrieving_weights_multi_classes();
+	void retrieving_weights_multi_classes_into_text_file();
 	void printing_predicted_output_multi_class();
 };
 
@@ -270,9 +272,17 @@ void multinomial_regression_model_gradient_descent::learning_multi_classes() {
 	learning_weights_multi_classes();
 }
 
-MatrixXf& multinomial_regression_model_gradient_descent::retrieving_weights_multi_classes() {
-	printing_weights_multi_class();
-	return weightsm;
+void multinomial_regression_model_gradient_descent::retrieving_weights_multi_classes_into_text_file() {
+	std::ofstream outputFile("weights.txt");
+	for(std::size_t f = 0; f < number_of_features; f++) {
+		for(std::size_t k = 0; k < number_of_classes - 1; k++) {
+			outputFile<<weightsm(f, k)<<" ";
+		}
+		outputFile<<weightsm(f, number_of_classes - 1)<<" ";
+		if(f != number_of_features - 1) {
+			outputFile<<std::endl;
+		}
+	}
 }
 
 void multinomial_regression_model_gradient_descent::printing_predicted_output_multi_class(){

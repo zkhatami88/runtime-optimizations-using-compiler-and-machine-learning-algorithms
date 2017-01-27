@@ -1,5 +1,5 @@
-CHECKER_CMD="/home/lukas/compiler/build/bin/for-each-checker /home/lukas/code/hpx/analyze.cpp -- -std=c++14"
-FILE="../data.dat"
+CHECKER_CMD="/home/zahra/clang-llvm/build/bin/loop-convert /home/lukas/code/hpx/analyze.cpp -- -std=c++11"
+FILE="../computed_features/data.dat"
 MAX_NUM_THREADS=32
 
 cd build

@@ -1,0 +1,5 @@
+num_threads num_ops num_float_ops num_comp_ops num_lambda_iter deepest_loop_level
+0 424 200 112 0 2 
+ hey! this is adaptive_for_each loop 
+
+ final_policy is : 0
