@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.12)
-project(test1 CXX)
+project(my_test CXX)
 
 set(HPX_ROOT "/home/zahra/Projects/HPX/build")
 set(HPX_DIR "${HPX_ROOT}/lib/cmake/HPX")
@@ -12,8 +12,8 @@ find_package(HPX)
 include_directories(${HPX_INCLUDE_DIR})
 link_directories(${HPX_LIBRARY_DIR})
 
-set(SOURCE_FILES test1.cpp)
-add_hpx_executable(test1
+set(SOURCE_FILES my_test.cpp)
+add_hpx_executable(my_test
     ESSENTIAL
     SOURCES ${SOURCE_FILES}
     COMPONENT_DEPENDENCIES iostreams)

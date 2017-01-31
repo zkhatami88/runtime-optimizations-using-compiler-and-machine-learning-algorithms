@@ -1,0 +1,7 @@
+num_threads num_ops num_float_ops num_comp_ops num_lambda_iter deepest_loop_level
+num_threads num_ops num_float_ops num_comp_ops num_lambda_iter deepest_loop_level
+0 0 424 200 112 2 num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level
+
+0 0 424 200 112 2
+ 
+ final_policy is : 0
