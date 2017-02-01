@@ -1,4 +1,4 @@
-filename num_threads num_ops num_float_ops num_comp_ops num_lambda_iter deepest_loop_level num_int_var num_float_var num_if_stmts num_if_stmts_in_loop time(1) time(5) time(50) time(500)
+filename num_threads num_ops num_float_ops num_comp_ops num_lambda_iter deepest_loop_level num_int_var num_float_var num_if_stmts num_if_stmts_in_loop time(5000) time(5) time(50) time(500)
 ../functions/dot_product.hpp 1 402 0 101 0 1 1 0 0 0 0.000286769 0.000146038 9.2819e-05 4.9587e-05 
 ../functions/dot_product.hpp 2 402 0 101 0 1 1 0 0 0 0.000268679 0.000145131 9.212e-05 2.7238e-05 
 ../functions/dot_product.hpp 4 402 0 101 0 1 1 0 0 0 0.000280693 0.000302972 0.000179842 3.7574e-05 
