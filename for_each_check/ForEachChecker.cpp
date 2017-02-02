@@ -1,3 +1,5 @@
+//  Copyright (c) 2017 Lukas Troska and Zahra Khatami
+
 #include <string>
 
 #include "clang/AST/AST.h"
@@ -28,11 +30,11 @@ struct statistics
     // 
     // , which are going to be determined and assigned with this class
 
-    unsigned num_threads;               //f0 = number of threads: will be assigned with runtime
-    unsigned num_ops;                   //f1
-    unsigned num_float_ops;             //f2
-    unsigned num_comparison_ops;        //f3
-    unsigned num_lambda_iterations;     //f4 : will be re-assigned with runtime
+    unsigned num_threads;               //f0 = will be assigned with runtime
+    unsigned num_lambda_iterations;     //f1 = will be re-assigned with runtime
+    unsigned num_ops;                   //f2
+    unsigned num_float_ops;             //f3
+    unsigned num_comparison_ops;        //f4    
     unsigned deepest_loop_level;        //f5
     unsigned num_int_variables;
     unsigned num_float_variables;
@@ -42,17 +44,21 @@ struct statistics
     unsigned num_func_calls_in_loop;
     
     
-    statistics() : num_threads(0), num_ops(0), num_float_ops(0), num_comparison_ops(0),
-                    num_lambda_iterations(0), deepest_loop_level(0),
+    statistics() : num_threads(0), num_lambda_iterations(0), 
+                    num_ops(0), num_float_ops(0), 
+                    num_comparison_ops(0), deepest_loop_level(0),
                     num_int_variables(0), num_float_variables(0),
                     num_if_stmts(0), num_if_stmts_in_loop(0),
                     num_func_calls(0), num_func_calls_in_loop(0) {}
     
     friend raw_ostream& operator<< (raw_ostream &out, statistics const& s)
     {
-        return out  << s.num_threads << " " << s.num_ops << " " << s.num_float_ops
-                    << " " << s.num_comparison_ops << " " << s.num_lambda_iterations
-                    << " " << s.deepest_loop_level; /* << " " << s.num_int_variables
+        return out  << "\n" << s.num_threads
+                    << " " << s.num_lambda_iterations 
+                    << " " << s.num_ops 
+                    << " " << s.num_float_ops
+                    << " " << s.num_comparison_ops 
+                    << " " << s.deepest_loop_level << "\n"; /* << " " << s.num_int_variables
                     << " " << s.num_float_variables << " " << s.num_if_stmts
                     << " " << s.num_if_stmts_in_loop << " " << s.num_func_calls
                     << " " << s.num_func_calls_in_loop; */                                     
@@ -191,7 +197,9 @@ public:
                 
         if (!isa<DeclRefExpr>(exec_policy_expr))
             return;
-                
+
+        statistics stats;
+        const SourceManager *SM = Result.SourceManager;       
         const DeclRefExpr* policy = cast<DeclRefExpr>(exec_policy_expr);
             
         if (policy->getFoundDecl()->getQualifiedNameAsString() == "hpx::parallel::v1::par_if")
@@ -201,87 +209,20 @@ public:
             << call->getLocStart().printToString(
                                             Result.Context->getSourceManager())
             << "-------------------------\n";
-    
-            statistics stats;
-            const SourceManager &Sources = *Result.SourceManager;
-            
-                                                    
-            for (auto it = call->arg_begin(); it != call->arg_end(); ++it)
-            {                
-                if (isa<DeclRefExpr>(*it))
-                {
-                    const Expr* lambda_expr = *it;
-                                        
-                    const CXXRecordDecl* lambda_record =
-                        lambda_expr->getBestDynamicClassType();
-                
-                    if (!lambda_record->isLambda())
-                        continue;            
-                                                            
-                    const CXXMethodDecl* lambda_callop =
-                        lambda_record->getLambdaCallOperator();
-                    
-                    Stmt* lambda_body = lambda_callop->getBody();
-                                        
-                    analyze_statement(lambda_body, stats);
+            policy_determination(call, SM, stats);  
+        }
 
-                    //printing out the extracted data
-                    llvm::outs() << stats;     
+        std::string match_chunk_policy = policy->getFoundDecl()->getQualifiedNameAsString();
+        std::size_t dot = match_chunk_policy.find(".");
+        std::string substr = match_chunk_policy.substr(0, dot);
 
-                    //Get the source range and manager.
-                    SourceRange range1 = call->getSourceRange();
-                    range1.setEnd(call->getArg(0)->getExprLoc());
-                    SourceRange range2 = call->getSourceRange();
-                    range2.setBegin(call->getArg(1)->getExprLoc().getLocWithOffset(-1));
-                    range2.setEnd(range2.getEnd().getLocWithOffset(2));
-                    
-                    SourceRange iter_first_range(call->getArg(1)->getExprLoc(), call->getArg(2)->getExprLoc().getLocWithOffset(-2));
-                    SourceRange iter_last_range(call->getArg(2)->getExprLoc(), call->getArg(3)->getExprLoc().getLocWithOffset(-2));
-                    
-                    const SourceManager *SM = Result.SourceManager;
-                    
-                    std::string first_iter =
-                        Lexer::getSourceText(
-                            CharSourceRange::getCharRange(iter_first_range), *SM,
-                            LangOptions()
-                        ).str();                
-                        
-                    std::string last_iter =
-                        Lexer::getSourceText(
-                            CharSourceRange::getCharRange(iter_last_range), *SM,
-                            LangOptions()
-                        ).str();
-                    
-
-                    //Use LLVM's lexer to get source text.
-                    llvm::StringRef ref1 =
-                        Lexer::getSourceText(
-                            CharSourceRange::getCharRange(range1), *SM,
-                            LangOptions()
-                        );
-                    llvm::StringRef ref2 =
-                        Lexer::getSourceText(
-                            CharSourceRange::getCharRange(range2), *SM,
-                            LangOptions()
-                        );
-                    
-                    std::string data = "{" + std::to_string(stats.num_threads) + 
-                            ", " + std::to_string(stats.num_ops) + 
-                            ", " + std::to_string(stats.num_float_ops) + 
-                            ", " + std::to_string(stats.num_comparison_ops) + 
-                ", std::distance(" + first_iter + ", " + last_iter + ")" + 
-                            ", " + std::to_string(stats.deepest_loop_level) + "}";
-                    
-                    std::string new_call =
-                        "if (hpx::parallel::seq_or_par(" + data + ")) " + ref1.str() +
-                        "hpx::parallel::seq," + ref2.str() +
-                        " else "  + ref1.str() +
-                        "hpx::parallel::par," + ref2.str();
-                    
-                    Rewrite.ReplaceText(SourceRange(range1.getBegin(), range2.getEnd()), new_call);
-                    Rewrite.overwriteChangedFiles();
-                }            
-            }
+        if(substr == "hpx::parallel::v1::which_chunk")
+        {      
+            llvm::outs() << "Found which_chunk exec policy in call at line "
+            << call->getLocStart().printToString(
+                                            Result.Context->getSourceManager())
+            << "-------------------------\n";
+            chunk_size_determination(call, SM, stats);  
         }
     }
   }
@@ -338,6 +279,165 @@ private:
                             loop_level);
     } 
   }
+
+  void chunk_size_determination(const CallExpr *call, const SourceManager *SM, statistics& stats) {
+    for (auto it = call->arg_begin(); it != call->arg_end(); ++it)
+    {                
+        if (isa<DeclRefExpr>(*it))
+        {
+            const Expr* lambda_expr = *it;
+                                        
+            const CXXRecordDecl* lambda_record =
+                lambda_expr->getBestDynamicClassType();
+                
+            if (!lambda_record->isLambda())
+                continue;            
+                                                            
+            const CXXMethodDecl* lambda_callop =
+                lambda_record->getLambdaCallOperator();
+                    
+            Stmt* lambda_body = lambda_callop->getBody();                                        
+            analyze_statement(lambda_body, stats);
+
+            //printing out the extracted data
+            llvm::outs() << stats;     
+
+            //Get the source range and manager.
+            SourceRange range1 = call->getSourceRange();
+            range1.setEnd(call->getArg(0)->getExprLoc());
+            SourceRange range2 = call->getSourceRange();
+            range2.setBegin(call->getArg(1)->getExprLoc().getLocWithOffset(-1));
+            range2.setEnd(range2.getEnd().getLocWithOffset(2));
+                    
+            SourceRange iter_first_range(call->getArg(1)->getExprLoc(), call->getArg(2)->getExprLoc().getLocWithOffset(-2));
+            SourceRange iter_last_range(call->getArg(2)->getExprLoc(), call->getArg(3)->getExprLoc().getLocWithOffset(-2));
+                                      
+            std::string first_iter =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(iter_first_range), *SM,
+                    LangOptions()
+                ).str();                
+                        
+            std::string last_iter =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(iter_last_range), *SM,
+                    LangOptions()
+                ).str();                    
+
+            //Use LLVM's lexer to get source text.
+            llvm::StringRef ref1 =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(range1), *SM,
+                    LangOptions()
+                );
+            llvm::StringRef ref2 =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(range2), *SM,
+                    LangOptions()
+                );
+                    
+            std::string data = "{hpx::get_os_thread_count(), " + 
+                            std::to_string(stats.num_ops) + 
+                            ", " + std::to_string(stats.num_float_ops) + 
+                            ", " + std::to_string(stats.num_comparison_ops) + 
+                            ", std::size_t(std::distance(" + first_iter + ", " + last_iter + "))" +
+                            ", " + std::to_string(stats.deepest_loop_level) + "}";
+            
+            std::string new_call = "//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:"
+                                    "\n\thpx::parallel::dynamic_chunk_size dcs(1);"
+                                    "\n\tswitch(" 
+                                    " hpx::parallel::param_determination(" 
+                                    + data + ") ) \n\t{"
+                                    "\n\t\tcase 1 : dcs = hpx::parallel::dynamic_chunk_size(5);"
+                                    "\n\t\tcase 2 : dcs = hpx::parallel::dynamic_chunk_size(50);"
+                                    "\n\t\tcase 3 : dcs = hpx::parallel::dynamic_chunk_size(500);"
+                                    "\n\t\tcase 4 : dcs = hpx::parallel::dynamic_chunk_size(5000);\n\t}\n\t"
+                                    + ref1.str() + 
+                                    " hpx::parallel::par.with(dcs), " 
+                                    + ref2.str();
+
+            //auto param = policy.parameters();
+            //auto exec = policy.executor();
+            Rewrite.ReplaceText(SourceRange(range1.getBegin(), range2.getEnd()), new_call);
+            Rewrite.overwriteChangedFiles();
+        }            
+    }
+  }
+  void policy_determination(const CallExpr *call, const SourceManager *SM, statistics& stats) {
+    for (auto it = call->arg_begin(); it != call->arg_end(); ++it)
+    {                
+        if (isa<DeclRefExpr>(*it))
+        {
+            const Expr* lambda_expr = *it;
+                                        
+            const CXXRecordDecl* lambda_record =
+                lambda_expr->getBestDynamicClassType();
+                
+            if (!lambda_record->isLambda())
+                continue;            
+                                                            
+            const CXXMethodDecl* lambda_callop =
+                lambda_record->getLambdaCallOperator();
+                    
+            Stmt* lambda_body = lambda_callop->getBody();                                        
+            analyze_statement(lambda_body, stats);
+
+            //printing out the extracted data
+            llvm::outs() << stats;     
+
+            //Get the source range and manager.
+            SourceRange range1 = call->getSourceRange();
+            range1.setEnd(call->getArg(0)->getExprLoc());
+            SourceRange range2 = call->getSourceRange();
+            range2.setBegin(call->getArg(1)->getExprLoc().getLocWithOffset(-1));
+            range2.setEnd(range2.getEnd().getLocWithOffset(2));
+                    
+            SourceRange iter_first_range(call->getArg(1)->getExprLoc(), call->getArg(2)->getExprLoc().getLocWithOffset(-2));
+            SourceRange iter_last_range(call->getArg(2)->getExprLoc(), call->getArg(3)->getExprLoc().getLocWithOffset(-2));
+                                      
+            std::string first_iter =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(iter_first_range), *SM,
+                    LangOptions()
+                ).str();                
+                        
+            std::string last_iter =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(iter_last_range), *SM,
+                    LangOptions()
+                ).str();                    
+
+            //Use LLVM's lexer to get source text.
+            llvm::StringRef ref1 =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(range1), *SM,
+                    LangOptions()
+                );
+            llvm::StringRef ref2 =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(range2), *SM,
+                    LangOptions()
+                );
+                    
+            std::string data = "{hpx::get_os_thread_count(), " + 
+                            std::to_string(stats.num_ops) + 
+                            ", " + std::to_string(stats.num_float_ops) + 
+                            ", " + std::to_string(stats.num_comparison_ops) + 
+                            ", std::size_t(std::distance(" + first_iter + ", " + last_iter + "))" +
+                            ", " + std::to_string(stats.deepest_loop_level) + "}";
+                    
+            std::string new_call = //adding exec and param to be attached
+                "//DETERMING CHUNK SIZE BASED ON STATIC AND DYNAMIC FEATURES:\n \tif (hpx::parallel::seq_or_par(" + data + ")) \n \t \t" + ref1.str() +
+                "hpx::parallel::seq," + ref2.str() +
+                "\n \telse \n \t \t"  + ref1.str() +
+                "hpx::parallel::par," + ref2.str();
+                    
+            Rewrite.ReplaceText(SourceRange(range1.getBegin(), range2.getEnd()), new_call);
+            Rewrite.overwriteChangedFiles();
+        }            
+    }
+  }
+
 };
 
 // Implementation of the ASTConsumer interface for reading an AST produced
@@ -350,7 +450,7 @@ public:
     Matcher.addMatcher(callExpr(
           callee(functionDecl(matchesName("hpx::parallel::[^:]*")))
           
-        ).bind("functionCall"), &HandlerForEach);
+        ).bind("functionCall"), &HandlerForEach);   
   }
 
   void HandleTranslationUnit(ASTContext &Context) override {
@@ -388,3 +488,4 @@ int main(int argc, const char **argv) {
 
   return Tool.run(newFrontendActionFactory<MyFrontendAction>().get());
 }
+

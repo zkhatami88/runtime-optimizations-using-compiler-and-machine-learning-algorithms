@@ -7,25 +7,14 @@
 #include <algorithm>
 #include <hpx/parallel/algorithms/for_each.hpp>
 
+//new classes for implementing machine learning techniques
+#include <hpx/parallel/seq_or_par.hpp>
+#include <hpx/parallel/param_determination.hpp>
+#include <hpx/parallel/executors/dynamic_chunk_size.hpp>
+
 #define num_iters 10
 
 #define num_rows 10
-
-std::vector<double> read_weights_binary_rm() {
-    std::vector<double> weights;
-    std::string line;
-    std::string str;
-    std::ifstream myfile ("/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Learning_Alg/weights.txt");
-
-    //first line contains weights:   
-    getline(myfile, line);
-    std::stringstream ss(line);
-    while(getline(ss, str, ' ')) {
-        weights.push_back(std::atof(str.c_str()));
-    }
-
-    return weights;
-}
 
 int hpx_main(int argc, char* argv[])
 {
@@ -59,14 +48,13 @@ int hpx_main(int argc, char* argv[])
 
         return ret;
     };
-      
-    //reading weights from txt:
-    std::vector<double> w = read_weights_binary_rm();    
+    
+    hpx::parallel::sequential_executor seq_exec;
+    hpx::parallel::parallel_executor par_exec;
+    //seq or par
+    //hpx::parallel::for_each(hpx::parallel::par_if , r.begin(), r.end(), f);
 
-    // first arg will be overwritten by compiler
-    hpx::parallel::adaptive_for_each(hpx::parallel::features_container<double>({0, 0, 424, 200, 112, 2}), hpx::parallel::weights_container<double>({w[0], w[1], w[2], w[3], w[4], w[5], w[6]}), 
-                            hpx::parallel::seq, r.begin(), r.end(), f);
-
+    hpx::parallel::for_each(hpx::parallel::which_chunk, r.begin(), r.end(), f);
 
     return hpx::finalize();
 }
