@@ -31,6 +31,10 @@ class multinomial_regression_model_gradient_descent {
 	MatrixXf gradient;							//gradient of E : F * K
 	MatrixXf sum_w_experimental_results;		//used for computing output : N 
 	int* predicted_output_multi_class;			//predicted class of each experimental results
+	std::size_t* candidates;					//parameter candidates : for example, different chunk sizes
+	float* averages;							//parameters for normalization
+	float* averages_2;							//parameters for normalization
+	float* var;									//parameters for normalization
 	
 
 	void normalizing_weights_multi_class();
@@ -48,12 +52,12 @@ class multinomial_regression_model_gradient_descent {
 	
 public:
 	multinomial_regression_model_gradient_descent(std::size_t number_of_expr, std::size_t number_of_ftrs, std::size_t number_of_cls, 
-											float th, float** expr_results, int* target_expr) {
+											float th, float** expr_results, int* target_expr, std::size_t* candies) {
 		number_of_experiments = number_of_expr;
 		number_of_features = number_of_ftrs;
 		number_of_classes = number_of_cls;
 		threshold = th;
-		eta = 0.001;
+		eta = 0.0001;
 	
 		sum_w_experimental_results = MatrixXf::Random(number_of_experiments, 1);		
 		weightsm = MatrixXf::Random(number_of_features, number_of_classes);
@@ -66,6 +70,12 @@ public:
 		outputsm = MatrixXf::Random(number_of_experiments, number_of_classes);
 		predicted_output_multi_class = new int[number_of_experiments];
 		real_output = new int[number_of_experiments];
+		candidates = new std::size_t[number_of_classes];
+
+		//variance and average of each features value for normalization
+		averages = new float[number_of_features];
+		averages_2 = new float[number_of_features];
+		var = new float[number_of_features];
 
 		//initializing weights
 		for(std::size_t f = 0; f < number_of_features; f++) {
@@ -86,11 +96,17 @@ public:
 		//initializing targets_multi_class
 		convert_target_to_binary(target_expr, targets_multi_class);
 		outputsm = targets_multi_class;
+
+		//initializing parameters candidates
+		for(std::size_t c = 0; c < number_of_classes; c++) {
+			candidates[c] = candies[c];
+		}
 	}
 
 	void learning_multi_classes();
 	void retrieving_weights_multi_classes_into_text_file();
 	void printing_predicted_output_multi_class();
+	void finalizing_step();
 };
 
 //it prints computed values : for testing
@@ -230,10 +246,7 @@ void multinomial_regression_model_gradient_descent::learning_weights_multi_class
 	std::cout<<"("<<itr<<") => "<<"Least_squared_err =\t" << least_squared_err<<std::endl;
 }
 
-void multinomial_regression_model_gradient_descent::normalizing_weights_multi_class() {
-	float* averages = new float[number_of_features];
-	float* averages_2 = new float[number_of_features];
-	float* var = new float[number_of_features];
+void multinomial_regression_model_gradient_descent::normalizing_weights_multi_class() {	
 	//initializing
 	for(std::size_t i = 0; i < number_of_features; i++) {
 		averages[i] = 0;
@@ -259,11 +272,6 @@ void multinomial_regression_model_gradient_descent::normalizing_weights_multi_cl
 			experimental_results(n, f) = float((experimental_results(n, f) - averages[f])/var[f]);
 		}
 	}
-
-	//releasing memory
-	delete[] averages;
-	delete[] averages_2;
-	delete[] var;
 }
 
 void multinomial_regression_model_gradient_descent::learning_multi_classes() {
@@ -272,15 +280,28 @@ void multinomial_regression_model_gradient_descent::learning_multi_classes() {
 	learning_weights_multi_classes();
 }
 
-void multinomial_regression_model_gradient_descent::retrieving_weights_multi_classes_into_text_file() {
-	std::ofstream outputFile("weights.txt");
+//retrieving information into the external file, which is going to be used at runtime
+void multinomial_regression_model_gradient_descent::retrieving_weights_multi_classes_into_text_file() {	
+	std::ofstream outputFile("weights_multi_class.txt");
+	//chunk_size candidates in the first line
+	for(std::size_t ch = 0; ch < number_of_classes - 1; ch++) {
+		outputFile << candidates[ch] << " ";
+	}
+	outputFile << candidates[number_of_classes - 1] << std::endl;
+
+	//normalization parameters (variance and average) in the second line
+	for(std::size_t p = 0; p < number_of_features - 1; p++) {
+		outputFile << var[p] << " " << averages[p]; 
+	}
+	outputFile << var[number_of_features - 1] << " " << averages[number_of_features - 1] << std::endl;
+
 	for(std::size_t f = 0; f < number_of_features; f++) {
 		for(std::size_t k = 0; k < number_of_classes - 1; k++) {
-			outputFile<<weightsm(f, k)<<" ";
+			outputFile << weightsm(f, k) << " ";
 		}
-		outputFile<<weightsm(f, number_of_classes - 1)<<" ";
+		outputFile<<weightsm(f, number_of_classes - 1);
 		if(f != number_of_features - 1) {
-			outputFile<<std::endl;
+			outputFile << std::endl;
 		}
 	}
 }
@@ -294,4 +315,14 @@ void multinomial_regression_model_gradient_descent::printing_predicted_output_mu
 		}
 	}
 	std::cout<<"\n number of error predicted is\t"<<num_err<<" out of "<<number_of_experiments<<std::endl;
+}
+
+void multinomial_regression_model_gradient_descent::finalizing_step() {
+
+	//releasing memory
+	delete[] averages;
+	delete[] averages_2;
+	delete[] var;
+	delete[] predicted_output_multi_class;
+	delete[] real_output;
 }
