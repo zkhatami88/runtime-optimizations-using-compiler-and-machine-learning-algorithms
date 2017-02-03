@@ -1,40 +1,14 @@
 num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level
- num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level
- num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level
-Found which_chunk exec policy in call at line /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:57:5-------------------------
+
+Found par_if exec policy in call at line /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:56:5
+-------------------------
 
 0 0 424 200 112 2
- num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level
-Found which_chunk exec policy in call at line /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:57:5-------------------------
 
-0 0 424 200 112 2
- num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level
-Found which_chunk exec policy in call at line /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:57:5-------------------------
-
-0 0 424 200 112 2
- num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level
- num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level
-Found which_chunk exec policy in call at line /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:57:5-------------------------
-
-0 0 424 200 112 2
- num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level
-Found which_chunk exec policy in call at line /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:57:5-------------------------
-
-0 0 424 200 112 2
- num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level
- num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level
- num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level
-Found which_chunk exec policy in call at line /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:57:5-------------------------
-
-0 0 424 200 112 2
- num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level
- num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level
-Found which_chunk exec policy in call at line /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:57:5-------------------------
-
-0 0 424 200 112 2
- num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level
- num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level
-Found which_chunk exec policy in call at line /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:57:5-------------------------
+Found which_chunk exec policy in call at line /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:61:5
+-------------------------
 
 0 0 424 200 112 2
  
+Please include chunk_size candidates in the first line. 
+Please include normalization parameters (variance and average) in the second line. 

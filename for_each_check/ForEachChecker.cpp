@@ -199,30 +199,54 @@ public:
             return;
 
         statistics stats;
-        const SourceManager *SM = Result.SourceManager;       
-        const DeclRefExpr* policy = cast<DeclRefExpr>(exec_policy_expr);
-            
-        if (policy->getFoundDecl()->getQualifiedNameAsString() == "hpx::parallel::v1::par_if")
-        {
+        const SourceManager *SM = Result.SourceManager;
+
+        if (call->getNumArgs() >= 4 ) {
+
+            ///////////////////////////////////////////////////////////////////
+
+            // Determining if policy is par_if
+            SourceRange par_if_policy(call->getArg(0)->getExprLoc(), call->getArg(1)->getExprLoc().getLocWithOffset(-2));
+                                      
+            std::string par_if_string =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(par_if_policy), *SM,
+                    LangOptions()
+                ).str(); 
+
+            //llvm::outs() << "\n first arg is : " << par_if_string << "\n"; //with param or exec : policy
+
+            if (par_if_string.find("par_if") != std::string::npos)
+            {
       
-            llvm::outs() << "Found par_if exec policy in call at line "
-            << call->getLocStart().printToString(
+                llvm::outs() << "\nFound par_if exec policy in call at line "
+                << call->getLocStart().printToString(
                                             Result.Context->getSourceManager())
-            << "-------------------------\n";
-            policy_determination(call, SM, stats);  
-        }
+                << "\n-------------------------\n";
+                policy_determination(call, SM, stats);  
+            }
+            ///////////////////////////////////////////////////////////////////
 
-        std::string match_chunk_policy = policy->getFoundDecl()->getQualifiedNameAsString();
-        std::size_t dot = match_chunk_policy.find(".");
-        std::string substr = match_chunk_policy.substr(0, dot);
+            // Determining if policy is which_chunk
+            SourceRange chunk_policy(call->getArg(0)->getExprLoc(), call->getArg(1)->getExprLoc().getLocWithOffset(-2));
+                                      
+            std::string chunk_policy_string =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(chunk_policy), *SM,
+                    LangOptions()
+                ).str(); 
 
-        if(substr == "hpx::parallel::v1::which_chunk")
-        {      
-            llvm::outs() << "Found which_chunk exec policy in call at line "
-            << call->getLocStart().printToString(
+            if(chunk_policy_string.find("which_chunk") != std::string::npos)
+            {      
+                llvm::outs() << "\nFound which_chunk exec policy in call at line "
+                << call->getLocStart().printToString(
                                             Result.Context->getSourceManager())
-            << "-------------------------\n";
-            chunk_size_determination(call, SM, stats);  
+                << "\n-------------------------\n";
+                chunk_size_determination(call, SM, stats);  
+            }
+            ///////////////////////////////////////////////////////////////////
+
+            // Determining if policy is which_prefetcher 
         }
     }
   }
@@ -299,10 +323,10 @@ private:
             Stmt* lambda_body = lambda_callop->getBody();                                        
             analyze_statement(lambda_body, stats);
 
-            //printing out the extracted data
+            // Printing out the extracted data
             llvm::outs() << stats;     
 
-            //Get the source range and manager.
+            // Get the source range and manager.
             SourceRange range1 = call->getSourceRange();
             range1.setEnd(call->getArg(0)->getExprLoc());
             SourceRange range2 = call->getSourceRange();
@@ -324,7 +348,7 @@ private:
                     LangOptions()
                 ).str();                    
 
-            //Use LLVM's lexer to get source text.
+            // Use LLVM's lexer to get source text.
             llvm::StringRef ref1 =
                 Lexer::getSourceText(
                     CharSourceRange::getCharRange(range1), *SM,
@@ -335,29 +359,52 @@ private:
                     CharSourceRange::getCharRange(range2), *SM,
                     LangOptions()
                 );
-                    
-            std::string data = "{hpx::get_os_thread_count(), " + 
-                            std::to_string(stats.num_ops) + 
-                            ", " + std::to_string(stats.num_float_ops) + 
-                            ", " + std::to_string(stats.num_comparison_ops) + 
-                            ", std::size_t(std::distance(" + first_iter + ", " + last_iter + "))" +
-                            ", " + std::to_string(stats.deepest_loop_level) + "}";
-            
-            std::string new_call = "//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:"
-                                    "\n\thpx::parallel::dynamic_chunk_size dcs(1);"
-                                    "\n\tswitch(" 
-                                    " hpx::parallel::param_determination(" 
-                                    + data + ") ) \n\t{"
-                                    "\n\t\tcase 1 : dcs = hpx::parallel::dynamic_chunk_size(5);"
-                                    "\n\t\tcase 2 : dcs = hpx::parallel::dynamic_chunk_size(50);"
-                                    "\n\t\tcase 3 : dcs = hpx::parallel::dynamic_chunk_size(500);"
-                                    "\n\t\tcase 4 : dcs = hpx::parallel::dynamic_chunk_size(5000);\n\t}\n\t"
-                                    + ref1.str() + 
-                                    " hpx::parallel::par.with(dcs), " 
-                                    + ref2.str();
 
-            //auto param = policy.parameters();
-            //auto exec = policy.executor();
+            // Passing static info extracted at compile time into runtime
+            std::string data = "{hpx::get_os_thread_count(), " + 
+                                std::to_string(stats.num_ops) + 
+                                ", " + std::to_string(stats.num_float_ops) + 
+                                ", " + std::to_string(stats.num_comparison_ops) + 
+                                ", std::size_t(std::distance(" + first_iter + ", " + last_iter + "))" +
+                                ", " + std::to_string(stats.deepest_loop_level) + "}";
+
+            std::string new_call;
+
+            // Examining code if current policy has any executor to be reattached
+            SourceRange policy_range(call->getArg(0)->getExprLoc(), call->getArg(1)->getExprLoc().getLocWithOffset(-2));
+            std::string policy_range_string =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(policy_range), *SM,
+                    LangOptions()
+                ).str();
+
+            std::size_t pos = policy_range_string.find(".on");
+            std::string param_exec;
+            if (pos != std::string::npos) {
+                std::size_t next_pos = policy_range_string.find(")", (pos + 1));
+                param_exec = policy_range_string.substr(pos, (next_pos - pos + 1));
+            }
+            else {
+                param_exec = "";
+            }
+
+            if (param_exec == "") {                
+            
+                new_call = "//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:"
+                                    "\n\t" + ref1.str() +
+                                    "hpx::parallel::par.with(hpx::parallel::param_determination(" + 
+                                    data + ")), " + 
+                                    ref2.str();
+            }
+            else {
+
+                new_call = "//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:"
+                                    "\n\t" + ref1.str() +
+                                    "hpx::parallel::par.with(hpx::parallel::param_determination(" + 
+                                    data + "))" + param_exec + 
+                                    ", " + ref2.str();
+            }
+
             Rewrite.ReplaceText(SourceRange(range1.getBegin(), range2.getEnd()), new_call);
             Rewrite.overwriteChangedFiles();
         }            
@@ -418,19 +465,52 @@ private:
                     CharSourceRange::getCharRange(range2), *SM,
                     LangOptions()
                 );
-                    
+
+            // Passing static info extracted at compile time into runtime
             std::string data = "{hpx::get_os_thread_count(), " + 
                             std::to_string(stats.num_ops) + 
                             ", " + std::to_string(stats.num_float_ops) + 
                             ", " + std::to_string(stats.num_comparison_ops) + 
                             ", std::size_t(std::distance(" + first_iter + ", " + last_iter + "))" +
                             ", " + std::to_string(stats.deepest_loop_level) + "}";
+
+            std::string new_call;
+
+            // Examining code if current policy has any executor or parameters to be reattached
+            SourceRange policy_range(call->getArg(0)->getExprLoc(), call->getArg(1)->getExprLoc().getLocWithOffset(-2));
+            std::string policy_range_string =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(policy_range), *SM,
+                    LangOptions()
+                ).str();
+
+            std::size_t pos = policy_range_string.find(".");
+            std::string param_exec;
+            if (pos != std::string::npos) {
+                param_exec = policy_range_string.substr(pos);
+            }
+            else {
+                param_exec = "";
+            }            
+
+            if (param_exec == "") {
                     
-            std::string new_call = //adding exec and param to be attached
-                "//DETERMING CHUNK SIZE BASED ON STATIC AND DYNAMIC FEATURES:\n \tif (hpx::parallel::seq_or_par(" + data + ")) \n \t \t" + ref1.str() +
-                "hpx::parallel::seq," + ref2.str() +
-                "\n \telse \n \t \t"  + ref1.str() +
-                "hpx::parallel::par," + ref2.str();
+                new_call = //adding exec and param to be attached
+                    "//DETERMING CHUNK SIZE BASED ON STATIC AND DYNAMIC FEATURES:\n \tif (hpx::parallel::seq_or_par(" + 
+                    data + ")) \n \t \t" + ref1.str() +
+                    "hpx::parallel::seq," + ref2.str() +
+                    "\n \telse \n \t \t"  + ref1.str() +
+                    "hpx::parallel::par," + ref2.str();
+            }
+            else {
+
+                new_call = //adding exec and param to be attached
+                    "//DETERMING CHUNK SIZE BASED ON STATIC AND DYNAMIC FEATURES:\n \tif (hpx::parallel::seq_or_par(" + 
+                    data + ")) \n \t \t" + ref1.str() +
+                    "hpx::parallel::seq." + param_exec + "," + ref2.str() +
+                    "\n \telse \n \t \t"  + ref1.str() +
+                    "hpx::parallel::par." + param_exec + "," + ref2.str();
+            }
                     
             Rewrite.ReplaceText(SourceRange(range1.getBegin(), range2.getEnd()), new_call);
             Rewrite.overwriteChangedFiles();
@@ -488,4 +568,3 @@ int main(int argc, const char **argv) {
 
   return Tool.run(newFrontendActionFactory<MyFrontendAction>().get());
 }
-

@@ -32,6 +32,7 @@ std::vector<double> read_weights_binary_rm(std::ifstream& myfile) {
 
 int hpx_main(int argc, char* argv[])
 {
+    /*
     auto r = boost::irange(0, num_iters);
         
     auto m1 = std::vector<std::vector<double > >(num_rows);
@@ -77,7 +78,7 @@ int hpx_main(int argc, char* argv[])
 
     //these values will be overwritten by compiler
     double f0, f1, f2, f3, f4, f5;
-    f0 = 7; f1 = 8; f2 = 9; f3 = 4; f4 = 5; f5 = 6;
+    f0 = 7; f1 = 8; f2 = 9; f3 = 4; f4 = 5; f5 = 6;*/
 
     //initially clang assignes the value of w0 and w1 to be 0
     //which are number of threads and number of iterations
@@ -105,6 +106,21 @@ int hpx_main(int argc, char* argv[])
     	std::cout<<i<<", ";
     }
     std::cout<<"\n";*/
+
+    std::ifstream infile("/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/weights_param_determination.dat");
+    // first line includes chunk_size candidates
+    std::string line_sizes;
+    getline(infile, line_sizes);
+    std::vector<std::size_t> chunk_size_candidates;
+    std::istringstream candidates_buffer(line_sizes);
+    std::transform(std::istream_iterator<std::string>(candidates_buffer), 
+                std::istream_iterator<std::string>(),
+                std::back_inserter(chunk_size_candidates),
+                [](std::string s) {return atol(s.c_str());});
+
+    for(int i = 0; i < chunk_size_candidates.size(); i++) {
+        std::cout<<chunk_size_candidates[i]<<" ";
+    }
 
     return hpx::finalize();
 }

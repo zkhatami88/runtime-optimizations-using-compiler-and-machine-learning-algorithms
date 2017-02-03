@@ -51,10 +51,17 @@ int hpx_main(int argc, char* argv[])
     
     hpx::parallel::sequential_executor seq_exec;
     hpx::parallel::parallel_executor par_exec;
+    hpx::parallel::dynamic_chunk_size dcs(10);
     //seq or par
-    //hpx::parallel::for_each(hpx::parallel::par_if , r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::par_if, r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::par_if.on(par_exec), r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::par_if.with(dcs), r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::par_if.on(par_exec).with(dcs), r.begin(), r.end(), f);
 
     hpx::parallel::for_each(hpx::parallel::which_chunk, r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::which_chunk.on(par_exec), r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::which_chunk.with(dcs), r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::which_chunk.on(par_exec).with(dcs), r.begin(), r.end(), f);
 
     return hpx::finalize();
 }

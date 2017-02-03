@@ -460,11 +460,7 @@ namespace hpx { namespace parallel { namespace execution
 
     /// Default sequential execution policy object.
     static sequenced_policy HPX_CONSTEXPR_OR_CONST seq;
-    // Applting machine learning techniques for policy determination by using par_if
-    static sequenced_policy HPX_CONSTEXPR_OR_CONST par_if;
-    // Applting machine learning techniques for chunk_size determination by using which_chunk
-    static sequenced_policy HPX_CONSTEXPR_OR_CONST which_chunk;
-
+    
     /// The class sequenced_policy is an execution policy type used
     /// as a unique type to disambiguate parallel algorithm overloading and
     /// require that a parallel algorithm's execution may not be parallelized.
@@ -1441,10 +1437,12 @@ namespace hpx { namespace parallel { HPX_INLINE_NAMESPACE(v1)
     using task_execution_policy_tag = parallel::execution::task_policy_tag;
 
     ///////////////////////////////////////////////////////////////////////////
-    static sequential_execution_policy HPX_CONSTEXPR_OR_CONST seq;
-    static sequential_execution_policy HPX_CONSTEXPR_OR_CONST par_if;
-    static sequential_execution_policy HPX_CONSTEXPR_OR_CONST which_chunk;
+    static sequential_execution_policy HPX_CONSTEXPR_OR_CONST seq;    
     static parallel_execution_policy HPX_CONSTEXPR_OR_CONST par;
+    // Applting machine learning techniques for policy determination by using par_if
+    static parallel_execution_policy HPX_CONSTEXPR_OR_CONST par_if;
+    // Applting machine learning techniques for chunk_size determination by using which_chunk
+    static parallel_execution_policy HPX_CONSTEXPR_OR_CONST which_chunk;
     static parallel_vector_execution_policy HPX_CONSTEXPR_OR_CONST par_vec;
 
     static task_execution_policy_tag HPX_CONSTEXPR_OR_CONST task;
@@ -1699,4 +1697,3 @@ namespace hpx { namespace parallel { HPX_INLINE_NAMESPACE(v1)
 #endif
 
 #endif
-
