@@ -39,7 +39,7 @@ hpx/parallel/algorithms/for_each.hpp
 -
 hpx/parallel/seq_or_par.hpp
 -
-hpx/parallel/param_determination.hpp
+hpx/parallel/chunk_size_determination.hpp
 -
 hpx/parallel/executors/dynamic_chunk_size.hpp
 -
@@ -1596,6 +1596,16 @@ type_traits
 utility
 -
 
+/home/zahra/Projects/HPX/repo/hpx/parallel/chunk_size_determination.hpp
+iostream
+-
+cmath
+-
+hpx/parallel/executors/dynamic_chunk_size.hpp
+-
+reading_learning_weights.hpp
+/home/zahra/Projects/HPX/repo/hpx/parallel/reading_learning_weights.hpp
+
 /home/zahra/Projects/HPX/repo/hpx/parallel/config/inline_namespace.hpp
 hpx/config/inline_namespace.hpp
 -
@@ -2276,7 +2286,7 @@ type_traits
 utility
 -
 
-/home/zahra/Projects/HPX/repo/hpx/parallel/param_determination.hpp
+/home/zahra/Projects/HPX/repo/hpx/parallel/reading_learning_weights.hpp
 fstream
 -
 algorithm
@@ -2289,16 +2299,10 @@ stdio.h
 -
 stdlib.h
 -
-hpx/parallel/executors/dynamic_chunk_size.hpp
--
 
 /home/zahra/Projects/HPX/repo/hpx/parallel/seq_or_par.hpp
-fstream
--
-algorithm
--
-iostream
--
+reading_learning_weights.hpp
+/home/zahra/Projects/HPX/repo/hpx/parallel/reading_learning_weights.hpp
 
 /home/zahra/Projects/HPX/repo/hpx/parallel/traits/detail/boost_simd/vector_pack_alignment_size.hpp
 hpx/config.hpp

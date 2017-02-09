@@ -4,7 +4,7 @@ FILE="../computed_features/features.txt"
 cd build
 
 #rm $FILE
-echo "num_threads num_lambda_iter num_ops num_float_ops num_comp_ops deepest_loop_level" >> $FILE
+echo "num_ops num_float_ops num_comp_ops deepest_loop_level" >> $FILE
 
 file="my_test_cases/test1.hpp" 
 echo $file

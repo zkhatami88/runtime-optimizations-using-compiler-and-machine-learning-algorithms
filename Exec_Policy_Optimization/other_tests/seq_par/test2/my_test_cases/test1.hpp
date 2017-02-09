@@ -9,7 +9,7 @@
 
 //new classes for implementing machine learning techniques
 #include <hpx/parallel/seq_or_par.hpp>
-#include <hpx/parallel/param_determination.hpp>
+#include <hpx/parallel/chunk_size_determination.hpp>
 #include <hpx/parallel/executors/dynamic_chunk_size.hpp>
 
 #define num_iters 10
@@ -55,7 +55,7 @@ int hpx_main(int argc, char* argv[])
     auto policy = hpx::parallel::par_if.on(par_exec);
     //seq or par
     //hpx::parallel::for_each(hpx::parallel::par_if, r.begin(), r.end(), f);
-    hpx::parallel::for_each(policy, r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::par_if.on(par_exec), r.begin(), r.end(), f);
     //hpx::parallel::for_each(hpx::parallel::par_if.with(dcs), r.begin(), r.end(), f);
     //hpx::parallel::for_each(hpx::parallel::par_if.on(par_exec).with(dcs), r.begin(), r.end(), f);
 

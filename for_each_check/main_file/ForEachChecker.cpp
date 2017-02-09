@@ -1,3 +1,5 @@
+//  Copyright (c) 2017 Lukas Troska and Zahra Khatami
+
 #include <string>
 
 #include "clang/AST/AST.h"
@@ -9,6 +11,7 @@
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Tooling.h"
 #include "clang/Rewrite/Core/Rewriter.h"
+#include "clang/Lex/Lexer.h"
 #include "llvm/Support/raw_ostream.h"
 
 using namespace clang;
@@ -27,11 +30,11 @@ struct statistics
     // 
     // , which are going to be determined and assigned with this class
 
-    unsigned num_threads;               //f0 = number of threads: will be assigned with runtime
-    unsigned num_ops;                   //f1
-    unsigned num_float_ops;             //f2
-    unsigned num_comparison_ops;        //f3
-    unsigned num_lambda_iterations;     //f4 : will be re-assigned with runtime
+    unsigned num_threads;               //f0 = will be assigned with runtime
+    unsigned num_lambda_iterations;     //f1 = will be re-assigned with runtime
+    unsigned num_ops;                   //f2
+    unsigned num_float_ops;             //f3
+    unsigned num_comparison_ops;        //f4    
     unsigned deepest_loop_level;        //f5
     unsigned num_int_variables;
     unsigned num_float_variables;
@@ -41,17 +44,21 @@ struct statistics
     unsigned num_func_calls_in_loop;
     
     
-    statistics() : num_threads(0), num_ops(0), num_float_ops(0), num_comparison_ops(0),
-                    num_lambda_iterations(0), deepest_loop_level(0),
+    statistics() : num_threads(0), num_lambda_iterations(0), 
+                    num_ops(0), num_float_ops(0), 
+                    num_comparison_ops(0), deepest_loop_level(0),
                     num_int_variables(0), num_float_variables(0),
                     num_if_stmts(0), num_if_stmts_in_loop(0),
                     num_func_calls(0), num_func_calls_in_loop(0) {}
     
     friend raw_ostream& operator<< (raw_ostream &out, statistics const& s)
     {
-        return out  << s.num_threads << " " << s.num_ops << " " << s.num_float_ops
-                    << " " << s.num_comparison_ops << " " << s.num_lambda_iterations
-                    << " " << s.deepest_loop_level; /* << " " << s.num_int_variables
+        return out  << /* "\n" << s.num_threads
+                    << " " << s.num_lambda_iterations 
+                    <<*/ " " << s.num_ops 
+                    << " " << s.num_float_ops
+                    << " " << s.num_comparison_ops 
+                    << " " << s.deepest_loop_level;/* << "\n"; /* << " " << s.num_int_variables
                     << " " << s.num_float_variables << " " << s.num_if_stmts
                     << " " << s.num_if_stmts_in_loop << " " << s.num_func_calls
                     << " " << s.num_func_calls_in_loop; */                                     
@@ -183,41 +190,90 @@ public:
 
     if (const CallExpr *call =
             Result.Nodes.getNodeAs<clang::CallExpr>("functionCall"))
-    {           
-        statistics stats;
-        const SourceManager &Sources = *Result.SourceManager;
-      
-        const Expr* num_iters_expr = call->getArg(4);
-        
-        if (isa<IntegerLiteral>(num_iters_expr))
-            stats.num_lambda_iterations =
-                cast<IntegerLiteral>(num_iters_expr)->getValue().getZExtValue();
-      
-        const Expr* lambda_expr = call->getArg(5);
-     
-        const CXXRecordDecl* lambda_record =
-            lambda_expr->getBestDynamicClassType();
-        
-        if (!lambda_record->isLambda())
+    {       
+        if (call->getNumArgs() == 0)
             return;
+        const Expr* exec_policy_expr = call->getArg(0);
+                
+        if (!isa<DeclRefExpr>(exec_policy_expr))
+            return;
+
+        statistics stats;
+        const SourceManager *SM = Result.SourceManager;
+
+        //llvm::outs() << call->getLocStart().printToString(Result.Context->getSourceManager()) << "\n num_arg: " << call->getNumArgs() <<"\n";
+
+        if (call->getNumArgs() >= 4 ) {
+            /*
+            //for tests
+            for (auto it = call->arg_begin(); it != call->arg_end(); ++it)
+            {   
+                if (isa<DeclRefExpr>(*it))
+                {
+                    const Expr* lambda_expr = *it;
+                                        
+                    const CXXRecordDecl* lambda_record =
+                        lambda_expr->getBestDynamicClassType();
+                
+                    if (!lambda_record->isLambda())
+                        continue;            
+                                                            
+                    const CXXMethodDecl* lambda_callop =
+                        lambda_record->getLambdaCallOperator();
+                    
+                    Stmt* lambda_body = lambda_callop->getBody();                                        
+                    analyze_statement(lambda_body, stats);
+
+                    // Printing out the extracted data
+                    llvm::outs() << stats;
+                }
+            }
+            */
+            ///////////////////////////////////////////////////////////////////
             
-        const CXXMethodDecl* lambda_callop =
-            lambda_record->getLambdaCallOperator();
-        
-        Stmt* lambda_body = lambda_callop->getBody();
-        
-        analyze_statement(lambda_body, stats);
+            // Determining if policy is par_if
+            SourceRange par_if_policy(call->getArg(0)->getExprLoc(), call->getArg(1)->getExprLoc().getLocWithOffset(-2));
+                                      
+            std::string par_if_string =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(par_if_policy), *SM,
+                    LangOptions()
+                ).str(); 
 
-        //printing out the extracted data
-        llvm::outs() << stats;
-       
-        // Replacing first argument (arg(0)) to include these informations:
-        // num_threads, num_ops, num_float_ops, num_comparison_ops, num_lambda_iterations and deepest_loop_level:
-        const Expr* feature_container = call->getArg(0);
-        const Expr* next_arg = call->getArg(1);
-        including_stats_info_in_arg0(Sources, feature_container, next_arg, stats);        
+            //llvm::outs() << "\n first arg is : " << par_if_string << "\n"; //with param or exec : policy
 
-        Rewrite.overwriteChangedFiles();   
+            if (par_if_string.find("par_if") != std::string::npos)
+            {
+      
+                llvm::outs() << "\nFound par_if exec policy in call at line "
+                << call->getLocStart().printToString(
+                                            Result.Context->getSourceManager())
+                << "\n-------------------------\n";
+                policy_determination(call, SM, stats);  
+            }
+            ///////////////////////////////////////////////////////////////////
+
+            // Determining if policy is which_chunk
+            SourceRange chunk_policy(call->getArg(0)->getExprLoc(), call->getArg(1)->getExprLoc().getLocWithOffset(-2));
+                                      
+            std::string chunk_policy_string =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(chunk_policy), *SM,
+                    LangOptions()
+                ).str(); 
+
+            if(chunk_policy_string.find("which_chunk") != std::string::npos)
+            {      
+                llvm::outs() << "\nFound which_chunk exec policy in call at line "
+                << call->getLocStart().printToString(
+                                            Result.Context->getSourceManager())
+                << "\n-------------------------\n";
+                chunk_size_determination(call, SM, stats);  
+            }
+            ///////////////////////////////////////////////////////////////////
+
+            // Determining if policy is which_prefetcher 
+        }
     }
   }
 
@@ -274,26 +330,221 @@ private:
     } 
   }
 
-    void including_stats_info_in_arg0(const SourceManager &Sources, const Expr* feature_container, 
-                                        const Expr* next_arg, statistics& stats) 
-    {
-        //setting arg0 to include static information:
-        std::string data = "hpx::parallel::features_container<double>({" + std::to_string(stats.num_threads) + 
-                            ", " + std::to_string(stats.num_ops) + 
+  void chunk_size_determination(const CallExpr *call, const SourceManager *SM, statistics& stats) {
+    for (auto it = call->arg_begin(); it != call->arg_end(); ++it)
+    {                
+        if (isa<DeclRefExpr>(*it))
+        {
+            const Expr* lambda_expr = *it;
+                                        
+            const CXXRecordDecl* lambda_record =
+                lambda_expr->getBestDynamicClassType();
+                
+            if (!lambda_record->isLambda())
+                continue;            
+                                                            
+            const CXXMethodDecl* lambda_callop =
+                lambda_record->getLambdaCallOperator();
+                    
+            Stmt* lambda_body = lambda_callop->getBody();                                        
+            analyze_statement(lambda_body, stats);
+
+            // Printing out the extracted data
+            //llvm::outs() << stats;     
+
+            // Get the source range and manager.
+            SourceRange range1 = call->getSourceRange();
+            range1.setEnd(call->getArg(0)->getExprLoc());
+            SourceRange range2 = call->getSourceRange();
+            range2.setBegin(call->getArg(1)->getExprLoc().getLocWithOffset(-1));
+            range2.setEnd(range2.getEnd().getLocWithOffset(2));
+                    
+            SourceRange iter_first_range(call->getArg(1)->getExprLoc(), call->getArg(2)->getExprLoc().getLocWithOffset(-2));
+            SourceRange iter_last_range(call->getArg(2)->getExprLoc(), call->getArg(3)->getExprLoc().getLocWithOffset(-2));
+                                      
+            std::string first_iter =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(iter_first_range), *SM,
+                    LangOptions()
+                ).str();                
+                        
+            std::string last_iter =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(iter_last_range), *SM,
+                    LangOptions()
+                ).str();                    
+
+            // Use LLVM's lexer to get source text.
+            llvm::StringRef ref1 =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(range1), *SM,
+                    LangOptions()
+                );
+            llvm::StringRef ref2 =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(range2), *SM,
+                    LangOptions()
+                );
+
+            // Passing static info extracted at compile time into runtime
+            std::string data = "{hpx::get_os_thread_count(), " + 
+                                std::to_string(stats.num_ops) + 
+                                ", " + std::to_string(stats.num_float_ops) + 
+                                ", " + std::to_string(stats.num_comparison_ops) + 
+                                ", std::size_t(std::distance(" + first_iter + ", " + last_iter + "))" +
+                                ", " + std::to_string(stats.deepest_loop_level) + "}";
+
+            std::string new_call;
+
+            // Examining code if current policy has any executor to be reattached
+            SourceRange policy_range(call->getArg(0)->getExprLoc(), call->getArg(1)->getExprLoc().getLocWithOffset(-2));
+            std::string policy_range_string =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(policy_range), *SM,
+                    LangOptions()
+                ).str();
+
+            std::size_t pos = policy_range_string.find(".on");
+            std::string param_exec;
+            if (pos != std::string::npos) {
+                std::size_t next_pos = policy_range_string.find(")", (pos + 1));
+                param_exec = policy_range_string.substr(pos, (next_pos - pos + 1));
+            }
+            else {
+                param_exec = "";
+            }
+
+            if (param_exec == "") {                
+            
+                new_call = "//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:"
+                                    "\n\t" + ref1.str() +
+                                    "hpx::parallel::par.with(hpx::parallel::chunk_size_determination(" + 
+                                    data + ")), " + 
+                                    ref2.str();
+            }
+            else {
+
+                new_call = "//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:"
+                                    "\n\t" + ref1.str() +
+                                    "hpx::parallel::par.with(hpx::parallel::chunk_size_determination(" + 
+                                    data + "))" + param_exec + 
+                                    ", " + ref2.str();
+            }
+
+            Rewrite.ReplaceText(SourceRange(range1.getBegin(), range2.getEnd()), new_call);
+            Rewrite.overwriteChangedFiles();
+        }            
+    }
+  }
+
+  void policy_determination(const CallExpr *call, const SourceManager *SM, statistics& stats) {
+    for (auto it = call->arg_begin(); it != call->arg_end(); ++it)
+    {                
+        if (isa<DeclRefExpr>(*it))
+        {
+            const Expr* lambda_expr = *it;
+                                        
+            const CXXRecordDecl* lambda_record =
+                lambda_expr->getBestDynamicClassType();
+                
+            if (!lambda_record->isLambda())
+                continue;            
+                                                            
+            const CXXMethodDecl* lambda_callop =
+                lambda_record->getLambdaCallOperator();
+                    
+            Stmt* lambda_body = lambda_callop->getBody();                                        
+            analyze_statement(lambda_body, stats);
+
+            //printing out the extracted data
+            //llvm::outs() << stats;     
+
+            //Get the source range and manager.
+            SourceRange range1 = call->getSourceRange();
+            range1.setEnd(call->getArg(0)->getExprLoc());
+            SourceRange range2 = call->getSourceRange();
+            range2.setBegin(call->getArg(1)->getExprLoc().getLocWithOffset(-1));
+            range2.setEnd(range2.getEnd().getLocWithOffset(2));
+                    
+            SourceRange iter_first_range(call->getArg(1)->getExprLoc(), call->getArg(2)->getExprLoc().getLocWithOffset(-2));
+            SourceRange iter_last_range(call->getArg(2)->getExprLoc(), call->getArg(3)->getExprLoc().getLocWithOffset(-2));
+                                      
+            std::string first_iter =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(iter_first_range), *SM,
+                    LangOptions()
+                ).str();                
+                        
+            std::string last_iter =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(iter_last_range), *SM,
+                    LangOptions()
+                ).str();                    
+
+            //Use LLVM's lexer to get source text.
+            llvm::StringRef ref1 =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(range1), *SM,
+                    LangOptions()
+                );
+            llvm::StringRef ref2 =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(range2), *SM,
+                    LangOptions()
+                );
+
+            // Passing static info extracted at compile time into runtime
+            std::string data = "{hpx::get_os_thread_count(), " + 
+                            std::to_string(stats.num_ops) + 
                             ", " + std::to_string(stats.num_float_ops) + 
                             ", " + std::to_string(stats.num_comparison_ops) + 
-                            ", " + std::to_string(stats.num_lambda_iterations) + 
-                            ", " + std::to_string(stats.deepest_loop_level) + "}), ";
+                            ", std::size_t(std::distance(" + first_iter + ", " + last_iter + "))" +
+                            ", " + std::to_string(stats.deepest_loop_level) + "}";
 
-        StringRef features = StringRef(data);
-        SourceLocation arg0_location = feature_container->getLocStart();
-        SourceLocation arg1_location = next_arg->getLocStart();
+            std::string new_call;
 
-        unsigned length = Sources.getSpellingColumnNumber(arg1_location) - 
-            Sources.getSpellingColumnNumber(arg0_location);
+            // Examining code if current policy has any executor or parameters to be reattached
+            SourceRange policy_range(call->getArg(0)->getExprLoc(), call->getArg(1)->getExprLoc().getLocWithOffset(-2));
+            std::string policy_range_string =
+                Lexer::getSourceText(
+                    CharSourceRange::getCharRange(policy_range), *SM,
+                    LangOptions()
+                ).str();
 
-        Rewrite.ReplaceText(arg0_location, length, features);
+            std::size_t pos = policy_range_string.find(".");
+            std::string param_exec;
+            if (pos != std::string::npos) {
+                param_exec = policy_range_string.substr(pos);
+            }
+            else {
+                param_exec = "";
+            }            
+
+            if (param_exec == "") {
+                    
+                new_call = //adding exec and param to be attached
+                    "//DETERMING CHUNK SIZE BASED ON STATIC AND DYNAMIC FEATURES:\n \tif (hpx::parallel::seq_or_par(" + 
+                    data + ")) \n \t \t" + ref1.str() +
+                    "hpx::parallel::seq," + ref2.str() +
+                    "\n \telse \n \t \t"  + ref1.str() +
+                    "hpx::parallel::par," + ref2.str();
+            }
+            else {
+
+                new_call = //adding exec and param to be attached
+                    "//DETERMING CHUNK SIZE BASED ON STATIC AND DYNAMIC FEATURES:\n \tif (hpx::parallel::seq_or_par(" + 
+                    data + ")) \n \t \t" + ref1.str() +
+                    "hpx::parallel::seq." + param_exec + "," + ref2.str() +
+                    "\n \telse \n \t \t"  + ref1.str() +
+                    "hpx::parallel::par." + param_exec + "," + ref2.str();
+            }
+                    
+            Rewrite.ReplaceText(SourceRange(range1.getBegin(), range2.getEnd()), new_call);
+            Rewrite.overwriteChangedFiles();
+        }            
     }
+  }
+
 };
 
 // Implementation of the ASTConsumer interface for reading an AST produced
@@ -302,17 +553,11 @@ private:
 class MyASTConsumer : public ASTConsumer {
 public:
   MyASTConsumer(Rewriter &R) : HandlerForEach(R) {
-    // Add a simple matcher for finding adaptive_for_each //'for_each' and 'for_each_n' statements.
+    // Add a simple matcher for finding hpx::parallel::* function calls
     Matcher.addMatcher(callExpr(
-          callee(functionDecl(hasName("hpx::parallel::adaptive_for_each")))
+          callee(functionDecl(matchesName("hpx::parallel::[^:]*")))
           
-        ).bind("functionCall"), &HandlerForEach);
-    
-    /*
-    Matcher.addMatcher(callExpr(
-          callee(functionDecl(hasName("hpx::parallel::for_each_n")))
-          
-        ).bind("functionCall"), &HandlerForEach);*/
+        ).bind("functionCall"), &HandlerForEach);   
   }
 
   void HandleTranslationUnit(ASTContext &Context) override {

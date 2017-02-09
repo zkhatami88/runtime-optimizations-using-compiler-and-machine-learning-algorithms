@@ -1,0 +1,5 @@
+cd build
+rm -rf *
+cmake -DCMAKE_CXX_COMPILER=/usr/local/bin/clang++ ..
+make -j
+./test.o
