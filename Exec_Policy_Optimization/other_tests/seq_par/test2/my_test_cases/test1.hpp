@@ -54,15 +54,35 @@ int hpx_main(int argc, char* argv[])
     hpx::parallel::dynamic_chunk_size dcs(10);
     auto policy = hpx::parallel::par_if.on(par_exec);
     //seq or par
-    //hpx::parallel::for_each(hpx::parallel::par_if, r.begin(), r.end(), f);
-    hpx::parallel::for_each(hpx::parallel::par_if.on(par_exec), r.begin(), r.end(), f);
-    //hpx::parallel::for_each(hpx::parallel::par_if.with(dcs), r.begin(), r.end(), f);
-    //hpx::parallel::for_each(hpx::parallel::par_if.on(par_exec).with(dcs), r.begin(), r.end(), f);
+    //DETERMING CHUNK SIZE BASED ON STATIC AND DYNAMIC FEATURES:
+ 	if (hpx::parallel::seq_or_par({hpx::get_os_thread_count(), 424, 200, 112, std::size_t(std::distance(r.begin(), r.end())), 2})) 
+ 	 	hpx::parallel::for_each(hpx::parallel::seq, r.begin(), r.end(), f);
+ 	else 
+ 	 	hpx::parallel::for_each(hpx::parallel::par, r.begin(), r.end(), f);
+    //DETERMING CHUNK SIZE BASED ON STATIC AND DYNAMIC FEATURES:
+ 	if (hpx::parallel::seq_or_par({hpx::get_os_thread_count(), 424, 200, 112, std::size_t(std::distance(r.begin(), r.end())), 2})) 
+ 	 	hpx::parallel::for_each(hpx::parallel::seq.on(seq_exec), r.begin(), r.end(), f);
+ 	else 
+ 	 	hpx::parallel::for_each(hpx::parallel::par.on(seq_exec), r.begin(), r.end(), f);
+    //DETERMING CHUNK SIZE BASED ON STATIC AND DYNAMIC FEATURES:
+ 	if (hpx::parallel::seq_or_par({hpx::get_os_thread_count(), 424, 200, 112, std::size_t(std::distance(r.begin(), r.end())), 2})) 
+ 	 	hpx::parallel::for_each(hpx::parallel::seq.with(dcs), r.begin(), r.end(), f);
+ 	else 
+ 	 	hpx::parallel::for_each(hpx::parallel::par.with(dcs), r.begin(), r.end(), f);
+    //DETERMING CHUNK SIZE BASED ON STATIC AND DYNAMIC FEATURES:
+ 	if (hpx::parallel::seq_or_par({hpx::get_os_thread_count(), 424, 200, 112, std::size_t(std::distance(r.begin(), r.end())), 2})) 
+ 	 	hpx::parallel::for_each(hpx::parallel::seq.on(seq_exec).with(dcs), r.begin(), r.end(), f);
+ 	else 
+ 	 	hpx::parallel::for_each(hpx::parallel::par.on(seq_exec).with(dcs), r.begin(), r.end(), f);
 
-    //hpx::parallel::for_each(hpx::parallel::which_chunk, r.begin(), r.end(), f);
-    //hpx::parallel::for_each(hpx::parallel::which_chunk.on(par_exec), r.begin(), r.end(), f);
-    //hpx::parallel::for_each(hpx::parallel::which_chunk.with(dcs), r.begin(), r.end(), f);
-    //hpx::parallel::for_each(hpx::parallel::which_chunk.on(par_exec).with(dcs), r.begin(), r.end(), f);
+    //DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
+	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 424, 200, 112, std::size_t(std::distance(r.begin(), r.end())), 2})),  r.begin(), r.end(), f);
+    //DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
+	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 424, 200, 112, std::size_t(std::distance(r.begin(), r.end())), 2})).on(par_exec),  r.begin(), r.end(), f);
+    //DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
+	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 424, 200, 112, std::size_t(std::distance(r.begin(), r.end())), 2})),  r.begin(), r.end(), f);
+    //DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
+	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 424, 200, 112, std::size_t(std::distance(r.begin(), r.end())), 2})).on(par_exec),  r.begin(), r.end(), f);
 
     return hpx::finalize();
 }

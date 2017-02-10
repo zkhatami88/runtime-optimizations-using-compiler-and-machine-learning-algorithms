@@ -61,7 +61,7 @@ namespace hpx { namespace parallel {
                 
         // instructions for users
         std::cout<<"Please include normalization parameters (variance and average) in the first line. \n";
-        std::ifstream infile("/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Learning_Alg/learning_weights/weights_seq_par.dat/weights_chunk_size.dat");
+        std::ifstream infile("/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Learning_Alg/learning_weights/weights_chunk_size.dat");
 
         // first line includes (variance and average) of each features
         std::string line_normalization;
@@ -100,7 +100,7 @@ namespace hpx { namespace parallel {
                 
         // instructions for users
         std::cout<<"Please include normalization parameters (variance and average) in the first line. \n";
-        std::ifstream infile("/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/weights_param_determination.dat");
+        std::ifstream infile("/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Learning_Alg/learning_weights/weights_param_determination.dat");
 
         // first line includes (variance and average) of each features
         std::string line_normalization;
