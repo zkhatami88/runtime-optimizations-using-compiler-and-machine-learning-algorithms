@@ -43,6 +43,8 @@ hpx/parallel/chunk_size_determination.hpp
 -
 hpx/parallel/executors/dynamic_chunk_size.hpp
 -
+hpx/parallel/executors/adaptive_chunk_size.hpp
+-
 
 /home/zahra/Projects/HPX/build/hpx/config/defines.hpp
 
@@ -1798,6 +1800,20 @@ hpx/parallel/executors/thread_pool_attached_executors.hpp
 hpx/parallel/executors/thread_pool_executors.hpp
 -
 hpx/parallel/executors/thread_pool_os_executors.hpp
+-
+
+/home/zahra/Projects/HPX/repo/hpx/parallel/executors/adaptive_chunk_size.hpp
+hpx/config.hpp
+-
+hpx/parallel/config/inline_namespace.hpp
+-
+hpx/parallel/executors/executor_traits.hpp
+-
+hpx/runtime/serialization/serialize.hpp
+-
+hpx/traits/is_executor_parameters.hpp
+-
+cstddef
 -
 
 /home/zahra/Projects/HPX/repo/hpx/parallel/executors/default_executor.hpp

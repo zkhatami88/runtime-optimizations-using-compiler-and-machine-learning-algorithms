@@ -276,7 +276,7 @@ public:
                 }
 
                 ///////////////////////////////////////////////////////////////////
-                // Determining if policy is which_chunk
+                // Determining if policy parameter is adaptive_chunk_size
                 SourceRange chunk_policy(call->getArg(0)->getExprLoc(), 
                                             call->getArg(1)->getExprLoc().getLocWithOffset(-2));
                                       
@@ -286,7 +286,7 @@ public:
                         LangOptions()
                     ).str(); 
 
-                if(chunk_policy_string.find("which_chunk") != std::string::npos)
+                if(chunk_policy_string.find("adaptive_chunk_size") != std::string::npos)
                 {      
                     chunk_size_determination(call, SM, stats);  
                 }
@@ -436,13 +436,18 @@ private:
                         LangOptions()
                     ).str();
 
-                std::size_t pos = policy_range_string.find(".on");
+                // extracting policy
+                std::size_t pos_policy = policy_range_string.find(".");
+                std::string policy = policy_range_string.substr(0, pos_policy);
+
+                // extracting executor
+                std::size_t pos_exec = policy_range_string.find(".on");
                 std::string param_exec;
 
-                if (pos != std::string::npos) 
+                if (pos_exec != std::string::npos) 
                 {
-                    std::size_t next_pos = policy_range_string.find(")", (pos + 1));
-                    param_exec = policy_range_string.substr(pos, (next_pos - pos + 1));
+                    std::size_t next_pos = policy_range_string.find(")", (pos_exec + 1));
+                    param_exec = policy_range_string.substr(pos_exec, (next_pos - pos_exec + 1));
                 }
                 else 
                 {
@@ -454,7 +459,7 @@ private:
             
                     new_call = "//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:"
                                         "\n\t" + ref1.str() +
-                                        "hpx::parallel::par.with(hpx::parallel::chunk_size_determination(" + 
+                                        policy + ".with(hpx::parallel::chunk_size_determination(" + 
                                         data + ")), " + 
                                         ref2.str();
                 }
@@ -463,7 +468,7 @@ private:
 
                     new_call = "//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:"
                                         "\n\t" + ref1.str() +
-                                        "hpx::parallel::par.with(hpx::parallel::chunk_size_determination(" + 
+                                        policy + ".with(hpx::parallel::chunk_size_determination(" + 
                                         data + "))" + param_exec + 
                                         ", " + ref2.str();
                 }
