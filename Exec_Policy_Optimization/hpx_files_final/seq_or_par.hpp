@@ -11,9 +11,9 @@
 
 namespace hpx { namespace parallel {
     
-    bool seq_or_par(std::vector<std::size_t> features)
+    bool seq_or_par(std::vector<std::size_t>&& features)
     {   
-        std::vector<double> weights = retreiving_weights_seq_par();
+        auto && weights = retreiving_weights_seq_par();
         assert(weights.size() > 0 && "ERROR : File is not readable or it is not is the defined format.\n");   
 
         features[0] = hpx::get_os_thread_count();

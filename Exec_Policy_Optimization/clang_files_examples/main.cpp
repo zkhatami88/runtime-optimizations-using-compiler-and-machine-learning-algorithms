@@ -55,7 +55,7 @@ public:
         return true;
     }
 
-/*
+
     virtual bool VisitReturnStmt(ReturnStmt *ret) {
         rewriter.ReplaceText(ret->getRetValue()->getLocStart(), 6, "val");
         errs() << "** Rewrote ReturnStmt\n";
@@ -67,7 +67,7 @@ public:
         errs() << "** Rewrote function call\n";
         return true;
     }
-*/
+
 };
 
 
@@ -89,7 +89,7 @@ public:
         visitor->TraverseDecl(Context.getTranslationUnitDecl());
     }
 
-/*
+
     // override this to call our ExampleVisitor on each top-level Decl
     virtual bool HandleTopLevelDecl(DeclGroupRef DG) {
         // a DeclGroupRef may have multiple Decls, so we iterate through each one
@@ -99,7 +99,7 @@ public:
         }
         return true;
     }
-*/
+
 };
 
 

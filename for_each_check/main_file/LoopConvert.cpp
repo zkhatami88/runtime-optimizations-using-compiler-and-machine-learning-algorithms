@@ -222,15 +222,24 @@ public:
         std::string func_string = FD->getQualifiedNameAsString();
         if (func_string.find(fName) != std::string::npos)
         {
-            llvm::outs()<<"is found in : ";
-            llvm::outs() << FD->getQualifiedNameAsString() << "\n";
-            
-            call->getLocStart().print(llvm::outs(), m_context->getSourceManager());
+            // printing found result information
+            //llvm::outs()<<"is found in : ";
+            //llvm::outs() << FD->getQualifiedNameAsString() << "\n";            
+            //call->getLocStart().print(llvm::outs(), m_context->getSourceManager());            
              
-            //extracting information and modifying usre`s code
-
+            //extracting information and modifying user's code
             if (call->getNumArgs() >= 4 ) 
             {
+                // Extracting policy as string
+                SourceRange policy(call->getArg(0)->getExprLoc(), 
+                                    call->getArg(1)->getExprLoc().getLocWithOffset(-2));
+
+                std::string policy_string =
+                    Lexer::getSourceText(
+                        CharSourceRange::getCharRange(policy), SM,
+                        LangOptions()
+                    ).str();
+
                 ///////////////////////////////////////////////////////////////////
                 /*
                 //for tests
@@ -258,41 +267,25 @@ public:
                 }*/
 
                 ///////////////////////////////////////////////////////////////////            
-                // Determining if policy is par_if
-                SourceRange par_if_policy(call->getArg(0)->getExprLoc(), 
-                                            call->getArg(1)->getExprLoc().getLocWithOffset(-2));
-                                      
-                std::string par_if_string =
-                    Lexer::getSourceText(
-                        CharSourceRange::getCharRange(par_if_policy), SM,
-                        LangOptions()
-                    ).str(); 
-
-                llvm::outs() << "\n first arg is : " << par_if_string << "\n";
-
-                if (par_if_string.find("par_if") != std::string::npos)
+                // Determining if policy is par_if                    
+                if (policy_string.find("par_if") != std::string::npos)
                 {                    
                     policy_determination(call, SM, stats);  
                 }
 
                 ///////////////////////////////////////////////////////////////////
                 // Determining if policy parameter is adaptive_chunk_size
-                SourceRange chunk_policy(call->getArg(0)->getExprLoc(), 
-                                            call->getArg(1)->getExprLoc().getLocWithOffset(-2));
-                                      
-                std::string chunk_policy_string =
-                    Lexer::getSourceText(
-                        CharSourceRange::getCharRange(chunk_policy), SM,
-                        LangOptions()
-                    ).str(); 
-
-                if(chunk_policy_string.find("adaptive_chunk_size") != std::string::npos)
+                if(policy_string.find("adaptive_chunk_size") != std::string::npos)
                 {      
                     chunk_size_determination(call, SM, stats);  
                 }
 
                 ///////////////////////////////////////////////////////////////////
-                // Determining if policy is which_prefetcher
+                // Determining if policy is make_prefetcher_policy
+                if(policy_string.find("make_prefetcher_policy") != std::string::npos)
+                {      
+                    prefethcer_distance_determination(call, SM, stats);  
+                }
 
             }
         }
@@ -377,7 +370,7 @@ private:
                 analyze_statement(lambda_body, stats);
 
                 // Printing out the extracted data
-                llvm::outs() << stats;     
+                //llvm::outs() << stats;     
 
                 // Get the source range and manager.
                 SourceRange range1 = call->getSourceRange();
@@ -500,7 +493,7 @@ private:
                 analyze_statement(lambda_body, stats);
 
                 //printing out the extracted data
-                llvm::outs() << stats;     
+                //llvm::outs() << stats;     
 
                 //Get the source range and manager.
                 SourceRange range1 = call->getSourceRange();
@@ -573,7 +566,8 @@ private:
                 if (param_exec == "") {
                     
                     new_call = //adding exec and param to be attached
-                        "//DETERMING CHUNK SIZE BASED ON STATIC AND DYNAMIC FEATURES:\n \tif (hpx::parallel::seq_or_par(" + 
+                        "//DETERMING EXECUTION POLICY BASED ON STATIC AND DYNAMIC FEATURES:"
+                        "\n \tif (hpx::parallel::seq_or_par(" + 
                         data + ")) \n \t \t" + ref1.str() +
                         "hpx::parallel::seq," + ref2.str() +
                         "\n \telse \n \t \t"  + ref1.str() +
@@ -582,13 +576,142 @@ private:
                 else {
 
                     new_call = //adding exec and param to be attached
-                        "//DETERMING CHUNK SIZE BASED ON STATIC AND DYNAMIC FEATURES:\n \tif (hpx::parallel::seq_or_par(" + 
+                        "//DETERMING EXECUTION POLICY BASED ON STATIC AND DYNAMIC FEATURES:"
+                        "\n \tif (hpx::parallel::seq_or_par(" + 
                         data + ")) \n \t \t" + ref1.str() +
                         "hpx::parallel::seq" + param_exec + "," + ref2.str() +
                         "\n \telse \n \t \t"  + ref1.str() +
                         "hpx::parallel::par" + param_exec + "," + ref2.str();
                 }
                     
+                rewriter.ReplaceText(SourceRange(range1.getBegin(), range2.getEnd()), new_call);
+                rewriter.overwriteChangedFiles();
+            }            
+        }
+    }
+
+    void prefethcer_distance_determination(const CallExpr *call, SourceManager &SM, statistics& stats) 
+    {
+        for (auto it = call->arg_begin(); it != call->arg_end(); ++it)
+        {                
+            if (isa<DeclRefExpr>(*it))
+            {
+                const Expr* lambda_expr = *it;
+                                        
+                const CXXRecordDecl* lambda_record =
+                    lambda_expr->getBestDynamicClassType();
+                
+                if (!lambda_record->isLambda())
+                    continue;            
+                                                            
+                const CXXMethodDecl* lambda_callop =
+                    lambda_record->getLambdaCallOperator();
+                    
+                Stmt* lambda_body = lambda_callop->getBody();                                        
+                analyze_statement(lambda_body, stats);
+
+                // Printing out the extracted data
+                //llvm::outs() << stats;     
+
+                // Get the source range and manager.
+                SourceRange range1 = call->getSourceRange();
+                range1.setEnd(call->getArg(0)->getExprLoc());
+                SourceRange range2 = call->getSourceRange();
+                range2.setBegin(call->getArg(1)->getExprLoc().getLocWithOffset(-1));
+                range2.setEnd(range2.getEnd().getLocWithOffset(2));
+                    
+                SourceRange iter_first_range(call->getArg(1)->getExprLoc(), 
+                                                call->getArg(2)->getExprLoc().getLocWithOffset(-2));
+
+                SourceRange iter_last_range(call->getArg(2)->getExprLoc(), 
+                                                call->getArg(3)->getExprLoc().getLocWithOffset(-2));
+                                      
+                std::string first_iter =
+                    Lexer::getSourceText(
+                        CharSourceRange::getCharRange(iter_first_range), SM,
+                        LangOptions()
+                    ).str();                
+                        
+                std::string last_iter =
+                    Lexer::getSourceText(
+                        CharSourceRange::getCharRange(iter_last_range), SM,
+                        LangOptions()
+                    ).str();                    
+
+                // Use LLVM's lexer to get source text.
+                llvm::StringRef ref1 =
+                    Lexer::getSourceText(
+                        CharSourceRange::getCharRange(range1), SM,
+                        LangOptions()
+                    );
+                llvm::StringRef ref2 =
+                    Lexer::getSourceText(
+                        CharSourceRange::getCharRange(range2), SM,
+                        LangOptions()
+                    );
+
+                // Passing static info extracted at compile time into runtime
+                std::string data = "{hpx::get_os_thread_count(), " + 
+                                    std::to_string(stats.num_ops) + 
+                                    ", " + std::to_string(stats.num_float_ops) + 
+                                    ", " + std::to_string(stats.num_comparison_ops) + 
+                                    ", std::size_t(std::distance(" + first_iter + ", " + last_iter + "))" +
+                                    ", " + std::to_string(stats.deepest_loop_level) + "}";
+
+                std::string new_call;
+
+                // Examining code if current policy has any executor or parameters to be reattached
+                SourceRange policy_range(call->getArg(0)->getExprLoc(), 
+                                            call->getArg(1)->getExprLoc().getLocWithOffset(-2));
+
+                std::string policy_range_string =
+                    Lexer::getSourceText(
+                        CharSourceRange::getCharRange(policy_range), SM,
+                        LangOptions()
+                    ).str();
+
+                std::size_t pos_policy = policy_range_string.find(".");
+                std::string param_exec;
+                if (pos_policy != std::string::npos) 
+                {
+                    param_exec = policy_range_string.substr(pos_policy);
+                }
+                else {
+                    param_exec = "";
+                }
+
+                // extracting prefetching_distance_factor_ and tuple from policy
+                std::string policy = policy_range_string.substr(0, pos_policy);
+                std::size_t pos_policy_prefix = policy_range_string.find("(");
+                std::string policy_prefix = policy.substr(0, pos_policy_prefix);
+
+                std::size_t pos_tuple = policy_range_string.find(",", pos_policy_prefix);
+                std::string tuple = policy.substr(pos_tuple);
+                 
+
+                if (param_exec == "") 
+                {                
+            
+                    new_call = "//DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:"
+                                        "\n\t" + ref1.str() + 
+                                        policy_prefix + 
+                                        "(hpx::parallel::prefetching_distance_determination(" +
+                                        data + ")" + 
+                                        tuple + ", " +
+                                        ref2.str();
+                }
+                else 
+                {
+                    new_call = "//DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:"
+                                        "\n\t" + ref1.str() + 
+                                        policy_prefix + 
+                                        "(hpx::parallel::prefetching_distance_determination(" +
+                                        data + ")" + 
+                                        tuple + ", " + 
+                                        param_exec + ", " +
+                                        ref2.str();
+                }
+
                 rewriter.ReplaceText(SourceRange(range1.getBegin(), range2.getEnd()), new_call);
                 rewriter.overwriteChangedFiles();
             }            

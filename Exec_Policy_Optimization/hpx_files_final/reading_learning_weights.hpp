@@ -100,7 +100,7 @@ namespace hpx { namespace parallel {
                 
         // instructions for users
         std::cout<<"Please include normalization parameters (variance and average) in the first line. \n";
-        std::ifstream infile("/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Learning_Alg/learning_weights/weights_param_determination.dat");
+        std::ifstream infile("/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Learning_Alg/learning_weights/weights_prefetcher_distance_factor.dat");
 
         // first line includes (variance and average) of each features
         std::string line_normalization;

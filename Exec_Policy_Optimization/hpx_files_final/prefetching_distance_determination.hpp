@@ -13,34 +13,34 @@
 
 namespace hpx { namespace parallel {
     
-	double prefetching_distance_determination(std::vector<std::size_t> features)
-	{   
-    	std::vector<std::vector<double>> weights = reading_learning_weights::retreiving_weights_chunk_size();    
-    	assert(weights.size() > 0 && "ERROR : File is not readable or it is not is the defined format.\n");
+    std::size_t prefetching_distance_determination(std::vector<std::size_t>&& features)
+    {   
+        auto && weights = retreiving_weights_prefetching_distance();    
+        assert(weights.size() > 0 && "ERROR : File is not readable or it is not is the defined format.\n");
 
-    	features[0] = hpx::get_os_thread_count();
+        features[0] = hpx::get_os_thread_count();
     
-    	//initial class = 0
-    	std::size_t determined_class = 0;
-    	double max = 0.0;
+        //initial class = 0
+        std::size_t determined_class = 0;
+        double max = 0.0;
 
-    	//max of (wi * f)
-    	for(std::size_t w = 0; w < weights.size(); w++) {
-    		double sum = 0.0;
-    		for(std::size_t f = 0; f < features.size(); f++) {
-    			sum += weights[w][f] * features[f];
-    		}
-    		if(max < sum) {
-    			max = sum;
-    			determined_class = w;
-    		}
-    	}
+        //max of (wi * f)
+        for(std::size_t w = 0; w < weights.size(); w++) {
+            double sum = 0.0;
+            for(std::size_t f = 0; f < features.size(); f++) {
+                sum += weights[w][f] * features[f];
+            }
+            if(max < sum) {
+                max = sum;
+                determined_class = w;
+            }
+        }
 
-        double dist = std::pow(10, determined_class); //* something!
+        std::size_t dist = std::pow(10, determined_class); //* something!
 
-    	//return dist;
+        //return dist;
         return dist;
-	}
+    }
 }}
 
 #endif
