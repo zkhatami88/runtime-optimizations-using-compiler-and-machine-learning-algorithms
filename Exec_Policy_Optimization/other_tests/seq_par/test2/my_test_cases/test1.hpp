@@ -14,6 +14,7 @@
 #include <hpx/parallel/executors/dynamic_chunk_size.hpp>
 #include <hpx/parallel/executors/adaptive_chunk_size.hpp>
 
+
 #define num_iters 10
 
 #define num_rows 10
@@ -60,43 +61,27 @@ int hpx_main(int argc, char* argv[])
 
     auto f_p = [&](std::size_t i) { c[i] = 42.1; };
 
-    hpx::parallel::sequential_executor seq_exec;
-    hpx::parallel::parallel_executor par_exec;
+    hpx::parallel::sequential_executor seq_exec_;
+    hpx::parallel::parallel_executor par_exec_;
     hpx::parallel::dynamic_chunk_size dcs(10);
 
+    
     //seq or par
-    //DETERMING EXECUTION POLICY BASED ON STATIC AND DYNAMIC FEATURES:
- 	if (hpx::parallel::seq_or_par({hpx::get_os_thread_count(), 424, 200, 112, std::size_t(std::distance(r.begin(), r.end())), 2})) 
- 	 	hpx::parallel::for_each(hpx::parallel::seq, r.begin(), r.end(), f);
- 	else 
- 	 	hpx::parallel::for_each(hpx::parallel::par, r.begin(), r.end(), f);
-    //DETERMING EXECUTION POLICY BASED ON STATIC AND DYNAMIC FEATURES:
- 	if (hpx::parallel::seq_or_par({hpx::get_os_thread_count(), 424, 200, 112, std::size_t(std::distance(r.begin(), r.end())), 2})) 
- 	 	hpx::parallel::for_each(hpx::parallel::seq.on(seq_exec), r.begin(), r.end(), f);
- 	else 
- 	 	hpx::parallel::for_each(hpx::parallel::par.on(seq_exec), r.begin(), r.end(), f);
-    //DETERMING EXECUTION POLICY BASED ON STATIC AND DYNAMIC FEATURES:
- 	if (hpx::parallel::seq_or_par({hpx::get_os_thread_count(), 424, 200, 112, std::size_t(std::distance(r.begin(), r.end())), 2})) 
- 	 	hpx::parallel::for_each(hpx::parallel::seq.with(dcs), r.begin(), r.end(), f);
- 	else 
- 	 	hpx::parallel::for_each(hpx::parallel::par.with(dcs), r.begin(), r.end(), f);
-    //DETERMING EXECUTION POLICY BASED ON STATIC AND DYNAMIC FEATURES:
- 	if (hpx::parallel::seq_or_par({hpx::get_os_thread_count(), 424, 200, 112, std::size_t(std::distance(r.begin(), r.end())), 2})) 
- 	 	hpx::parallel::for_each(hpx::parallel::seq.on(seq_exec).with(dcs), r.begin(), r.end(), f);
- 	else 
- 	 	hpx::parallel::for_each(hpx::parallel::par.on(seq_exec).with(dcs), r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::par_if, r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::par_if.on(seq_exec_), r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::par_if.on(par_exec_), r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::par_if.with(dcs), r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::par_if.on(seq_exec_).with(dcs), r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::par_if.with(dcs).on(seq_exec_), r.begin(), r.end(), f);
 
+    
     // choosing efficient chunk_size
-    //DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
-	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 424, 200, 112, std::size_t(std::distance(r.begin(), r.end())), 2})),  r.begin(), r.end(), f);
-    //DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
-	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 424, 200, 112, std::size_t(std::distance(r.begin(), r.end())), 2})).on(par_exec),  r.begin(), r.end(), f);
-    //DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
-	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 424, 200, 112, std::size_t(std::distance(r.begin(), r.end())), 2})).on(par_exec),  r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::adaptive_chunk_size()), r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::par.on(par_exec_).with(hpx::parallel::adaptive_chunk_size()), r.begin(), r.end(), f);
+    hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::adaptive_chunk_size()).on(par_exec_), r.begin(), r.end(), f);
     
     //choosing efficient prefetcher_distance_factor
-    //DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:
-	hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(hpx::parallel::prefetching_distance_determination({hpx::get_os_thread_count(), 1, 1, 0, std::size_t(std::distance(range.begin(), range.end())), 0}), c, d),  range.begin(), range.end(), f_p);
+    hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(prefetch_distance_factor, c, d), range.begin(), range.end(), f_p);
     
 
     return hpx::finalize();

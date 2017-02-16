@@ -35,3 +35,44 @@ d3
 d3
 d3
 d3
+num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ Heyyy 
+a
+b
+c
+d3
+d3
+d3
+d3
+num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+num_ops num_float_ops num_comp_ops deepest_loop_level
+ Please include normalization parameters (variance and average) in the first line. 
+Please include normalization parameters (variance and average) in the first line. 
+Please include normalization parameters (variance and average) in the first line. 
+Heyyy 
+a
+b
+c
+d3
+d3
+d3
+d3

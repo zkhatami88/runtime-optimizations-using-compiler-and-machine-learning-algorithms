@@ -27,6 +27,8 @@ typeinfo
 -
 iterator
 -
+hpx/parallel/executors/sequential_execution_wrapper.hpp
+-
 
 /home/zahra/Projects/HPX/build/hpx/config/defines.hpp
 
@@ -675,6 +677,8 @@ hpx/apply.hpp
 -
 hpx/lcos/future.hpp
 -
+hpx/runtime/get_worker_thread_num.hpp
+-
 hpx/runtime/launch_policy.hpp
 -
 hpx/traits/acquire_future.hpp
@@ -708,6 +712,14 @@ hpx/util/thread_description.hpp
 hpx/util/tuple.hpp
 -
 hpx/util/unwrap_ref.hpp
+-
+hpx/runtime/get_thread_name.hpp
+-
+hpx/traits/get_function_annotation.hpp
+-
+hpx/util/apex.hpp
+-
+hpx/util/itt_notify.hpp
 -
 hpx/parallel/executors/executor_traits.hpp
 -
@@ -833,6 +845,8 @@ hpx/runtime/threads/coroutines/detail/get_stack_pointer.hpp
 -
 hpx/throw_exception.hpp
 -
+hpx/traits/future_access.hpp
+-
 hpx/traits/get_remote_result.hpp
 -
 hpx/util/assert_owns_lock.hpp
@@ -850,6 +864,16 @@ hpx/util/steady_clock.hpp
 hpx/util/unique_function.hpp
 -
 hpx/util/unused.hpp
+-
+hpx/runtime/get_thread_name.hpp
+-
+hpx/traits/get_function_annotation.hpp
+-
+hpx/util/thread_description.hpp
+-
+hpx/util/apex.hpp
+-
+hpx/util/itt_notify.hpp
 -
 boost/exception_ptr.hpp
 -
@@ -1143,6 +1167,14 @@ hpx/util/deferred_call.hpp
 -
 hpx/util/thread_description.hpp
 -
+hpx/runtime/get_thread_name.hpp
+-
+hpx/traits/get_function_annotation.hpp
+-
+hpx/util/apex.hpp
+-
+hpx/util/itt_notify.hpp
+-
 boost/intrusive_ptr.hpp
 -
 functional
@@ -1170,6 +1202,14 @@ hpx/traits/is_callable.hpp
 hpx/util/thread_description.hpp
 -
 hpx/util/unique_function.hpp
+-
+hpx/runtime/get_thread_name.hpp
+-
+hpx/traits/get_function_annotation.hpp
+-
+hpx/util/apex.hpp
+-
+hpx/util/itt_notify.hpp
 -
 boost/exception_ptr.hpp
 -
@@ -1311,6 +1351,8 @@ boost/ref.hpp
 -
 algorithm
 -
+array
+-
 cstddef
 -
 functional
@@ -1328,8 +1370,6 @@ vector
 hpx/config.hpp
 -
 hpx/lcos/future.hpp
--
-hpx/lcos/local/futures_factory.hpp
 -
 hpx/runtime/threads/thread.hpp
 -
@@ -1354,6 +1394,8 @@ hpx/util/tuple.hpp
 boost/atomic.hpp
 -
 algorithm
+-
+array
 -
 cstddef
 -
@@ -1767,6 +1809,8 @@ hpx/parallel/executors/parallel_executor.hpp
 -
 hpx/parallel/executors/sequential_executor.hpp
 -
+hpx/parallel/executors/sequential_execution_wrapper.hpp
+-
 hpx/parallel/executors/service_executors.hpp
 -
 hpx/parallel/executors/this_thread_executors.hpp
@@ -2006,6 +2050,36 @@ hpx/parallel/config/inline_namespace.hpp
 hpx/parallel/executors/executor_traits.hpp
 -
 hpx/util/decay.hpp
+-
+
+/home/zahra/Projects/HPX/repo/hpx/parallel/executors/sequential_execution_wrapper.hpp
+hpx/config.hpp
+-
+hpx/parallel/config/inline_namespace.hpp
+-
+hpx/parallel/exception_list.hpp
+-
+hpx/parallel/executors/executor_traits.hpp
+-
+hpx/runtime/threads/thread_executor.hpp
+-
+hpx/traits/is_executor.hpp
+-
+hpx/util/deferred_call.hpp
+-
+hpx/util/invoke.hpp
+-
+hpx/util/unwrapped.hpp
+-
+cstddef
+-
+iterator
+-
+type_traits
+-
+utility
+-
+vector
 -
 
 /home/zahra/Projects/HPX/repo/hpx/parallel/executors/sequential_executor.hpp
@@ -2881,6 +2955,8 @@ hpx/util/detail/count_num_args.hpp
 -
 hpx/util/tuple.hpp
 -
+hpx/util/itt_notify.hpp
+-
 boost/preprocessor/cat.hpp
 -
 cstddef
@@ -2914,6 +2990,8 @@ hpx/runtime/threads/thread_data_fwd.hpp
 hpx/runtime/threads/thread_enums.hpp
 -
 hpx/traits/polymorphic_traits.hpp
+-
+hpx/util/itt_notify.hpp
 -
 cstdint
 -
@@ -2987,6 +3065,8 @@ hpx/util/tuple.hpp
 -
 hpx/util/void_guard.hpp
 -
+hpx/util/itt_notify.hpp
+-
 boost/atomic.hpp
 -
 boost/exception_ptr.hpp
@@ -3014,6 +3094,8 @@ utility
 
 /home/zahra/Projects/HPX/repo/hpx/runtime/actions/basic_action_fwd.hpp
 hpx/config.hpp
+-
+hpx/util/itt_notify.hpp
 -
 
 /home/zahra/Projects/HPX/repo/hpx/runtime/actions/component_action.hpp
@@ -3280,6 +3362,8 @@ cstddef
 cstdint
 -
 utility
+-
+hpx/runtime/parcelset/detail/per_action_data_counter_registry.hpp
 -
 
 /home/zahra/Projects/HPX/repo/hpx/runtime/actions/transfer_continuation_action.hpp
@@ -3945,7 +4029,7 @@ hpx/config.hpp
 -
 hpx/exception_fwd.hpp
 -
-hpx/lcos/future.hpp
+hpx/lcos_fwd.hpp
 -
 hpx/runtime/launch_policy.hpp
 -
@@ -3965,17 +4049,23 @@ cstddef
 /home/zahra/Projects/HPX/repo/hpx/runtime/get_thread_name.hpp
 hpx/config.hpp
 -
+hpx/util/itt_notify.hpp
+-
 string
 -
 
 /home/zahra/Projects/HPX/repo/hpx/runtime/get_worker_thread_num.hpp
 hpx/config.hpp
 -
+hpx/error_code.hpp
+-
 cstddef
 -
 
 /home/zahra/Projects/HPX/repo/hpx/runtime/launch_policy.hpp
 hpx/config.hpp
+-
+hpx/runtime/threads/thread_enums.hpp
 -
 hpx/runtime/serialization/serialization_fwd.hpp
 -
@@ -4322,6 +4412,8 @@ hpx/util/function.hpp
 hpx/util/tuple.hpp
 -
 hpx/util_fwd.hpp
+-
+boost/atomic.hpp
 -
 cstddef
 -
@@ -5293,6 +5385,10 @@ hpx/runtime/threads/thread_enums.hpp
 -
 hpx/util_fwd.hpp
 -
+hpx/util/function.hpp
+-
+hpx/util/unique_function.hpp
+-
 boost/intrusive_ptr.hpp
 -
 cstddef
@@ -5431,10 +5527,6 @@ hpx/runtime/threads/thread_data_fwd.hpp
 -
 hpx/runtime/threads/thread_enums.hpp
 -
-hpx/util/unique_function.hpp
--
-boost/thread/mutex.hpp
--
 
 /home/zahra/Projects/HPX/repo/hpx/runtime/trigger_lco.hpp
 hpx/config.hpp
@@ -5537,6 +5629,8 @@ hpx/config/warnings_suffix.hpp
 /home/zahra/Projects/HPX/repo/hpx/traits/acquire_future.hpp
 hpx/config.hpp
 -
+hpx/traits/has_member_xxx.hpp
+-
 hpx/traits/is_future.hpp
 -
 hpx/traits/is_future_range.hpp
@@ -5546,6 +5640,8 @@ hpx/util/decay.hpp
 boost/range/functions.hpp
 -
 boost/range/iterator_range.hpp
+-
+array
 -
 cstddef
 -
@@ -5732,6 +5828,16 @@ vector
 
 /home/zahra/Projects/HPX/repo/hpx/traits/get_function_address.hpp
 hpx/config.hpp
+-
+cstddef
+-
+memory
+-
+
+/home/zahra/Projects/HPX/repo/hpx/traits/get_function_annotation.hpp
+hpx/config.hpp
+-
+hpx/util/itt_notify.hpp
 -
 cstddef
 -
@@ -6012,6 +6118,20 @@ utility
 
 /home/zahra/Projects/HPX/repo/hpx/util/always_void.hpp
 
+/home/zahra/Projects/HPX/repo/hpx/util/apex.hpp
+hpx/config.hpp
+-
+hpx/runtime/get_locality_id.hpp
+-
+hpx/util/thread_description.hpp
+-
+hpx/runtime/get_num_localities.hpp
+-
+hpx/runtime/startup_function.hpp
+-
+apex_api.hpp
+/home/zahra/Projects/HPX/repo/hpx/util/apex_api.hpp
+
 /home/zahra/Projects/HPX/repo/hpx/util/assert.hpp
 boost/assert.hpp
 -
@@ -6060,6 +6180,8 @@ hpx/config.hpp
 hpx/config.hpp
 -
 hpx/traits/get_function_address.hpp
+-
+hpx/traits/get_function_annotation.hpp
 -
 hpx/traits/is_action.hpp
 -
@@ -6139,6 +6261,8 @@ hpx/config.hpp
 -
 hpx/traits/get_function_address.hpp
 -
+hpx/traits/get_function_annotation.hpp
+-
 hpx/traits/is_callable.hpp
 -
 hpx/util/decay.hpp
@@ -6170,6 +6294,8 @@ hpx/config.hpp
 hpx/runtime/serialization/serialization_fwd.hpp
 -
 hpx/traits/get_function_address.hpp
+-
+hpx/traits/get_function_annotation.hpp
 -
 hpx/traits/is_callable.hpp
 -
@@ -6230,6 +6356,8 @@ boost/preprocessor/cat.hpp
 hpx/config.hpp
 -
 hpx/traits/get_function_address.hpp
+-
+hpx/traits/get_function_annotation.hpp
 -
 hpx/util/detail/vtable/vtable.hpp
 -
@@ -6322,6 +6450,8 @@ hpx/config.hpp
 hpx/runtime/serialization/serialization_fwd.hpp
 -
 hpx/traits/get_function_address.hpp
+-
+hpx/traits/get_function_annotation.hpp
 -
 hpx/traits/is_callable.hpp
 -
@@ -6459,9 +6589,11 @@ utility
 /home/zahra/Projects/HPX/repo/hpx/util/itt_notify.hpp
 hpx/config.hpp
 -
-hpx/util/thread_description.hpp
--
 cstddef
+-
+cstdint
+-
+cstring
 -
 
 /home/zahra/Projects/HPX/repo/hpx/util/jenkins_hash.hpp
@@ -7585,9 +7717,13 @@ hpx/runtime/threads/thread_data_fwd.hpp
 -
 hpx/traits/get_function_address.hpp
 -
+hpx/traits/get_function_annotation.hpp
+-
 hpx/traits/is_action.hpp
 -
 hpx/util/assert.hpp
+-
+hpx/util/itt_notify.hpp
 -
 cstddef
 -
@@ -7642,6 +7778,8 @@ hpx/config.hpp
 hpx/runtime/serialization/serialization_fwd.hpp
 -
 hpx/traits/get_function_address.hpp
+-
+hpx/traits/get_function_annotation.hpp
 -
 hpx/traits/is_callable.hpp
 -
@@ -7698,6 +7836,8 @@ hpx/util/lazy_enable_if.hpp
 hpx/util/result_of.hpp
 -
 hpx/util/tuple.hpp
+-
+array
 -
 cstddef
 -

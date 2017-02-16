@@ -193,7 +193,7 @@ HPX_Fortran_COMPILER_ID:STRING=
 HPX_Fortran_COMPILER_VERSION:STRING=
 
 //Revision of HPX from Git
-HPX_GIT_COMMIT:STRING=269d35abfa789223fc8a2c914468a0b89ac03537
+HPX_GIT_COMMIT:STRING=0e6f158d058a08d9d1674516d342f8569607ae7b
 
 //Define which allocator should be linked in. Options are: system,
 // tcmalloc, jemalloc, tbbmalloc, and custom (default is: tcmalloc)
