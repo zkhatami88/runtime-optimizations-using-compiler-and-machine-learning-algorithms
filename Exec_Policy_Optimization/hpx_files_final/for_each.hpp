@@ -435,20 +435,20 @@ namespace hpx { namespace parallel { HPX_INLINE_NAMESPACE(v1)
 
 
     // FIXME : is_indirect_callable does not work properly when compiling
-    //         Cuda device code
+    //         Cuda host code
     template <typename ExPolicy, typename InIter, typename F,
         typename Proj = util::projection_identity,
     HPX_CONCEPT_REQUIRES_(
         execution::is_execution_policy<ExPolicy>::value &&
         hpx::traits::is_iterator<InIter>::value &&
-        parallel::traits::is_projected<Proj, InIter>::value
-#if defined(__CUDA_ARCH__)
-        &&
+        parallel::traits::is_projected<Proj, InIter>::value)
+#if (!defined(__NVCC__) && !defined(__CUDACC__)) || defined(__CUDA_ARCH__)
+  , HPX_CONCEPT_REQUIRES_(
         parallel::traits::is_indirect_callable<
             ExPolicy, F, traits::projected<Proj, InIter>
-        >::value
+        >::value)
 #endif
-        )>
+    >
     typename util::detail::algorithm_result<ExPolicy, InIter>::type
     for_each(ExPolicy && policy, InIter first, InIter last, F && f,
         Proj && proj = Proj())
@@ -465,9 +465,9 @@ namespace hpx { namespace parallel { HPX_INLINE_NAMESPACE(v1)
     }
 
     // for_each with prefetching 
-    template <typename InIter, typename F, typename ... Ts>
+    template <typename ExPolicy, typename InIter, typename F, typename ... Ts>
     void
-    for_each(hpx::parallel::execution::prefetching_policy<Ts ...> && policy, 
+    for_each(hpx::parallel::execution::prefetching_policy<ExPolicy, Ts ...> && policy, 
         InIter first, InIter last, F && f)
     {
         std::cout << "Heyyy \n";
@@ -475,14 +475,11 @@ namespace hpx { namespace parallel { HPX_INLINE_NAMESPACE(v1)
         auto prefetcher_context = util::make_prefetcher_context(first, last, 
                                     policy.get_prefetching_distance_factor(), 
                                     std::move(policy.get_ranges()));
-
         
-        // In this method, par is used as an execution policy,
-        // parameters and executors of "policy" are also
-        // reattached to par        
+        // Executing loop on policy while prefetching containers with a loop
+        auto && current_policy = policy.get_policy();       
         for_each(
-            std::forward<hpx::parallel::execution::parallel_policy>(
-                par.with(policy.parameters()).on(policy.executor())), 
+            std::forward<hpx::parallel::execution::parallel_policy>(current_policy), 
             prefetcher_context.begin(), prefetcher_context.end(), 
             std::forward<F>(f));
     }

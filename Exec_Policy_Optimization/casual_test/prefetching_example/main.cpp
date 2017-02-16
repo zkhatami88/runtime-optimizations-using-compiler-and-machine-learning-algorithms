@@ -10,6 +10,7 @@
 #include <typeinfo>
 #include <iterator>
 #include <hpx/parallel/executors/sequential_execution_wrapper.hpp>
+#include <hpx/parallel/executors/prefetching_parameters.hpp>
 
 
 int hpx_main(int argc, char* argv[])
@@ -22,17 +23,20 @@ int hpx_main(int argc, char* argv[])
     std::vector<std::size_t> range(10007);
     std::iota(range.begin(), range.end(), 0);
 
-    auto policy = hpx::parallel::par;
+    hpx::parallel::parallel_executor par_exec_;
+    hpx::parallel::sequential_executor seq_exec_;
+    auto policy = hpx::parallel::par.with(par_exec_);
 
     auto f = [&](std::size_t i) {
         c[i] = 42.1; 
     };
 
     // New Method
-    /*
-    hpx::util::high_resolution_timer t;    
-    hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(prefetch_distance_factor, c, d), c.begin(), c.end(), f);
-    std::cout << "\n time :" << t.elapsed() << std::endl;
+    
+    //hpx::util::high_resolution_timer t;    
+    hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, prefetch_distance_factor, c, d), 
+                            c.begin(), c.end(), f);
+    //std::cout << "\n time :" << t.elapsed() << std::endl;
   
     // Old Method
     /*
@@ -44,11 +48,15 @@ int hpx_main(int argc, char* argv[])
     */
 
     // new exec wrapper
-    hpx::parallel::parallel_executor par_exec_;
-    hpx::parallel::sequential_executor seq_exec_;
+    
     //hpx::parallel::for_each(hpx::parallel::seq.on(par_exec_), c.begin(), c.end(), f); NOT Working
     hpx::parallel::for_each(hpx::parallel::seq.on(hpx::parallel::seq_wrapper(par_exec_)), c.begin(), c.end(), f);
     hpx::parallel::for_each(hpx::parallel::seq.on(hpx::parallel::seq_wrapper(seq_exec_)), c.begin(), c.end(), f);
+
+    // new prefetching param
+    //hpx::parallel::prefetching_parameters pref_param(prefetch_distance_factor);
+    //hpx::parallel::for_each(hpx::parallel::seq.with(pref_param), c.begin(), c.end(), f);
+    //hpx::parallel::for_each(hpx::parallel::seq.with(prefetch_distance_factor, c), c.begin(), c.end(), f);
 
     return hpx::finalize();
 }
