@@ -19,6 +19,14 @@
 
 #define num_rows 10
 
+void test_func() {
+    auto r = boost::irange(0, 100);
+    std::vector<double> c22(10007, 1.0);
+    auto f = [&](std::size_t i) { c22[i] = 42.1; };
+    hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::adaptive_chunk_size()),
+            r.begin(), r.end(), f);
+}
+
 int hpx_main(int argc, char* argv[])
 {
     auto r = boost::irange(0, num_iters);
@@ -44,7 +52,7 @@ int hpx_main(int argc, char* argv[])
     }
         
     auto f = [&](unsigned i) -> std::vector<std::vector<double> >
-    {                
+    {              
         for (int k = 0; k < num_rows; ++k)
             for (int j = 0; j < num_rows; ++j)
                 ret[i][k] += m1[i][j] * m2[j][k];
@@ -65,7 +73,6 @@ int hpx_main(int argc, char* argv[])
     hpx::parallel::parallel_executor par_exec_;
     hpx::parallel::dynamic_chunk_size dcs(10);
 
-    
     //seq or par
     hpx::parallel::for_each(hpx::parallel::par_if, r.begin(), r.end(), f);
     hpx::parallel::for_each(hpx::parallel::par_if.on(seq_exec_), r.begin(), r.end(), f);
@@ -81,7 +88,9 @@ int hpx_main(int argc, char* argv[])
     hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::adaptive_chunk_size()).on(par_exec_), r.begin(), r.end(), f);
     
     //choosing efficient prefetcher_distance_factor
-    hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(prefetch_distance_factor, c, d), range.begin(), range.end(), f_p);
+    //auto policy = hpx::parallel::par.with(par_exec_);
+    auto policy = hpx::parallel::par;
+    hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, prefetch_distance_factor, c, d), r.begin(), r.end(), f_p);
     
 
     return hpx::finalize();

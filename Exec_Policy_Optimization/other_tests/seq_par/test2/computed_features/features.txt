@@ -76,3 +76,66 @@ d3
 d3
 d3
 d3
+num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ num_ops num_float_ops num_comp_ops deepest_loop_level
+ Please include normalization parameters (variance and average) in the first line. 
+Please include normalization parameters (variance and average) in the first line. 
+Please include normalization parameters (variance and average) in the first line. 
+num_ops num_float_ops num_comp_ops deepest_loop_level
+is found in : hpx::parallel::features_container::execution_policy_cost_fnc
+/home/zahra/Projects/HPX/repo/hpx/parallel/util/compiler_static_information.hpp:68:12is found in : hpx::parallel::v1::for_each
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:70:5
+ hereeee
+is found in : hpx::parallel::v1::for_each
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:71:5
+ hereeee
+is found in : hpx::parallel::execution::parallel_policy::on
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:71:29is found in : hpx::parallel::v1::for_each
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:72:5
+ hereeee
+is found in : hpx::parallel::execution::parallel_policy::on
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:72:29is found in : hpx::parallel::v1::for_each
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:73:5
+ hereeee
+is found in : hpx::parallel::execution::parallel_policy::with
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:73:29is found in : hpx::parallel::v1::for_each
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:74:5
+ hereeee
+is found in : hpx::parallel::execution::parallel_policy_shim<hpx::parallel::v3::sequential_executor, hpx::parallel::v3::static_chunk_size>::with
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:74:29is found in : hpx::parallel::execution::parallel_policy::on
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:74:29is found in : hpx::parallel::v1::for_each
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:75:5
+ hereeee
+is found in : hpx::parallel::execution::parallel_policy_shim<hpx::parallel::v3::parallel_executor, hpx::parallel::v3::dynamic_chunk_size>::on
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:75:29is found in : hpx::parallel::execution::parallel_policy::with
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:75:29is found in : hpx::parallel::v1::for_each
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:79:5
+ hereeee
+
+ adaptive_chunk_size
+is found in : hpx::parallel::execution::parallel_policy::with
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:79:29is found in : hpx::parallel::v1::for_each
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:80:5
+ hereeee
+
+ adaptive_chunk_size
+is found in : hpx::parallel::execution::parallel_policy_shim<hpx::parallel::v3::parallel_executor, hpx::parallel::v3::static_chunk_size>::with
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:80:29is found in : hpx::parallel::execution::parallel_policy::on
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:80:29is found in : hpx::parallel::v1::for_each
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:81:5
+ hereeee
+
+ adaptive_chunk_size
+is found in : hpx::parallel::execution::parallel_policy_shim<hpx::parallel::v3::parallel_executor, hpx::parallel::v3::adaptive_chunk_size>::on
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:81:29is found in : hpx::parallel::execution::parallel_policy::with
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:81:29is found in : hpx::parallel::v1::for_each
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:86:5
+ hereeee
+
+ make_prefetcher_policy
+is found in : hpx::parallel::execution::make_prefetcher_policy
+/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/other_tests/seq_par/test2/my_test_cases/test1.hpp:86:29
+ hereeee
+ 

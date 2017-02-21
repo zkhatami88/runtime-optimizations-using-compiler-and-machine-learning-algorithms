@@ -10,7 +10,7 @@
 #include <typeinfo>
 #include <iterator>
 #include <hpx/parallel/executors/sequential_execution_wrapper.hpp>
-#include <hpx/parallel/executors/prefetching_parameters.hpp>
+#include <hpx/parallel/executors/adaptive_chunk_size.hpp>
 
 
 int hpx_main(int argc, char* argv[])
@@ -36,6 +36,8 @@ int hpx_main(int argc, char* argv[])
     //hpx::util::high_resolution_timer t;    
     hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, prefetch_distance_factor, c, d), 
                             c.begin(), c.end(), f);
+
+    hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::adaptive_chunk_size()), c.begin(), c.end(), f);
     //std::cout << "\n time :" << t.elapsed() << std::endl;
   
     // Old Method

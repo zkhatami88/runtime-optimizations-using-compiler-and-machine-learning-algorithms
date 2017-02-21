@@ -15,6 +15,7 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/IR/Instruction.h"
 #include "clang/AST/RecursiveASTVisitor.h"
+#include "clang/AST/DeclTemplate.h"
 
 #include "llvm/Support/CommandLine.h"
 #include "clang/Frontend/FrontendPluginRegistry.h"
@@ -25,6 +26,7 @@ using namespace llvm;
 using namespace clang::ast_matchers;
 using namespace clang::driver;
 using namespace clang::tooling;
+using clang::TemplateName;
 
 
 struct statistics
@@ -203,11 +205,23 @@ public:
         rewriter.setSourceMgr(m_context->getSourceManager(), m_context->getLangOpts());
     }
 
+    // Enabling visiting template functions
+    bool shouldVisitTemplateInstantiations () const {
+        return true;
+    }
+
+    static const FunctionDecl *getStructor(const FunctionDecl *fn) {
+        if (const FunctionTemplateDecl *ftd = fn->getPrimaryTemplate())
+            return ftd->getTemplatedDecl();
+
+        return fn;
+    }
+
     // Visit every call expression
     bool VisitCallExpr(const CallExpr *call)
     {
         const clang::FunctionDecl* FD = call->getDirectCallee();
-        
+
         if (!FD)
             return true;
 
@@ -218,13 +232,16 @@ public:
 
         SourceManager &SM = m_context->getSourceManager();
 
+        const clang::FunctionDecl* FD_str = getStructor(FD);
+
         //check if hpx::parallel::
-        std::string func_string = FD->getQualifiedNameAsString();
+        std::string func_string = FD_str->getQualifiedNameAsString();
+
         if (func_string.find(fName) != std::string::npos)
         {
             // printing found result information
             //llvm::outs()<<"is found in : ";
-            //llvm::outs() << FD->getQualifiedNameAsString() << "\n";            
+            //llvm::outs() << FD_str->getQualifiedNameAsString() << "\n";            
             //call->getLocStart().print(llvm::outs(), m_context->getSourceManager());            
              
             //extracting information and modifying user's code
@@ -267,7 +284,8 @@ public:
                 }*/
 
                 ///////////////////////////////////////////////////////////////////            
-                // Determining if policy is par_if                    
+                // Determining if policy is par_if 
+                                   
                 if (policy_string.find("par_if") != std::string::npos)
                 {                    
                     policy_determination(call, SM, stats);  
@@ -276,14 +294,14 @@ public:
                 ///////////////////////////////////////////////////////////////////
                 // Determining if policy parameter is adaptive_chunk_size
                 if(policy_string.find("adaptive_chunk_size") != std::string::npos)
-                {      
+                {     
                     chunk_size_determination(call, SM, stats);  
                 }
 
                 ///////////////////////////////////////////////////////////////////
                 // Determining if policy is make_prefetcher_policy
                 if(policy_string.find("make_prefetcher_policy") != std::string::npos)
-                {      
+                {     
                     prefethcer_distance_determination(call, SM, stats);  
                 }
 
@@ -435,22 +453,22 @@ private:
 
                 // extracting executor
                 std::size_t pos_exec = policy_range_string.find(".on");
-                std::string param_exec;
+                std::string exec;
 
                 if (pos_exec != std::string::npos) 
                 {
                     std::size_t next_pos = policy_range_string.find(")", (pos_exec + 1));
-                    param_exec = policy_range_string.substr(pos_exec, (next_pos - pos_exec + 1));
+                    exec = policy_range_string.substr(pos_exec, (next_pos - pos_exec + 1));
                 }
                 else 
                 {
-                    param_exec = "";
+                    exec = "";
                 }
 
-                if (param_exec == "") 
+                if (exec == "") 
                 {                
             
-                    new_call = "//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:"
+                    new_call = "\n//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:"
                                         "\n\t" + ref1.str() +
                                         policy + ".with(hpx::parallel::chunk_size_determination(" + 
                                         data + ")), " + 
@@ -459,10 +477,10 @@ private:
                 else 
                 {
 
-                    new_call = "//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:"
+                    new_call = "\n//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:"
                                         "\n\t" + ref1.str() +
                                         policy + ".with(hpx::parallel::chunk_size_determination(" + 
-                                        data + "))" + param_exec + 
+                                        data + "))" + exec + 
                                         ", " + ref2.str();
                 }
 
@@ -552,21 +570,46 @@ private:
                         LangOptions()
                     ).str();
 
-                std::size_t pos = policy_range_string.find(".");
-                std::string param_exec;
+                // Extracting policy
+                std::size_t pos_policy = policy_range_string.find(".");
+                std::string policy = policy_range_string.substr(0, pos_policy);
 
-                if (pos != std::string::npos) 
-                {
-                    param_exec = policy_range_string.substr(pos);
+                // Extracting parameters
+                std::string policy_param;
+                std::size_t pos_param_begin = policy_range_string.find(".with(");
+                if(pos_param_begin != std::string::npos) {
+                    std::size_t pos_param_end = policy_range_string.find(")", pos_param_begin + 1);
+                    policy_param = policy_range_string.substr(pos_param_begin, (pos_param_end - pos_param_begin + 1));
                 }
-                else {
-                    param_exec = "";
-                }            
 
-                if (param_exec == "") {
+                // Extracting executors
+                std::string policy_exec;
+                std::size_t pos_exec_begin = policy_range_string.find(".on(");
+                if(pos_exec_begin != std::string::npos) {
+                    std::size_t pos_exec_end = policy_range_string.find(")", pos_exec_begin + 1);
+                    policy_exec = policy_range_string.substr((pos_exec_begin + 4), (pos_exec_end - pos_exec_begin - 4));
+                }
+                
+
+                // Reattaching parameters and executors to the current policy
+                std::string seq_param_exec = "";
+                std::string par_param_exec = "";
+
+                if(pos_param_begin != std::string::npos) {
+                    seq_param_exec += policy_param;
+                    par_param_exec += policy_param;
+                }
+
+                if(pos_exec_begin != std::string::npos) {
+                    seq_param_exec += ".on(hpx::parallel::seq_wrapper(" +
+                                        policy_exec + "))";
+                    par_param_exec += ".on(" + policy_exec + ")";
+                }
+
+                if (seq_param_exec == "") {
                     
                     new_call = //adding exec and param to be attached
-                        "//DETERMING EXECUTION POLICY BASED ON STATIC AND DYNAMIC FEATURES:"
+                        "\n//DETERMING EXECUTION POLICY BASED ON STATIC AND DYNAMIC FEATURES:"
                         "\n \tif (hpx::parallel::seq_or_par(" + 
                         data + ")) \n \t \t" + ref1.str() +
                         "hpx::parallel::seq," + ref2.str() +
@@ -576,12 +619,12 @@ private:
                 else {
 
                     new_call = //adding exec and param to be attached
-                        "//DETERMING EXECUTION POLICY BASED ON STATIC AND DYNAMIC FEATURES:"
+                        "\n//DETERMING EXECUTION POLICY BASED ON STATIC AND DYNAMIC FEATURES:"
                         "\n \tif (hpx::parallel::seq_or_par(" + 
                         data + ")) \n \t \t" + ref1.str() +
-                        "hpx::parallel::seq" + param_exec + "," + ref2.str() +
+                        "hpx::parallel::seq" + seq_param_exec + "," + ref2.str() +
                         "\n \telse \n \t \t"  + ref1.str() +
-                        "hpx::parallel::par" + param_exec + "," + ref2.str();
+                        "hpx::parallel::par" + par_param_exec + "," + ref2.str();
                 }
                     
                 rewriter.ReplaceText(SourceRange(range1.getBegin(), range2.getEnd()), new_call);
@@ -670,47 +713,21 @@ private:
                         LangOptions()
                     ).str();
 
-                std::size_t pos_policy = policy_range_string.find(".");
-                std::string param_exec;
-                if (pos_policy != std::string::npos) 
-                {
-                    param_exec = policy_range_string.substr(pos_policy);
-                }
-                else {
-                    param_exec = "";
-                }
-
                 // extracting prefetching_distance_factor_ and tuple from policy
-                std::string policy = policy_range_string.substr(0, pos_policy);
-                std::size_t pos_policy_prefix = policy_range_string.find("(");
-                std::string policy_prefix = policy.substr(0, pos_policy_prefix);
+                std::size_t pos_policy_prefix = policy_range_string.find(",");
+                std::string policy_prefix = policy_range_string.substr(0, pos_policy_prefix);
 
-                std::size_t pos_tuple = policy_range_string.find(",", pos_policy_prefix);
-                std::string tuple = policy.substr(pos_tuple);
+                std::size_t pos_tuple = policy_range_string.find(",", pos_policy_prefix + 1);
+                std::string tuple = policy_range_string.substr(pos_tuple);
                  
+                new_call = "\n//DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:"
+                                    "\n\t" + ref1.str() + 
+                                    policy_prefix + 
+                                    ", hpx::parallel::prefetching_distance_determination(" +
+                                    data + ")" + 
+                                    tuple + ", " +
+                                    ref2.str();
 
-                if (param_exec == "") 
-                {                
-            
-                    new_call = "//DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:"
-                                        "\n\t" + ref1.str() + 
-                                        policy_prefix + 
-                                        "(hpx::parallel::prefetching_distance_determination(" +
-                                        data + ")" + 
-                                        tuple + ", " +
-                                        ref2.str();
-                }
-                else 
-                {
-                    new_call = "//DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:"
-                                        "\n\t" + ref1.str() + 
-                                        policy_prefix + 
-                                        "(hpx::parallel::prefetching_distance_determination(" +
-                                        data + ")" + 
-                                        tuple + ", " + 
-                                        param_exec + ", " +
-                                        ref2.str();
-                }
 
                 rewriter.ReplaceText(SourceRange(range1.getBegin(), range2.getEnd()), new_call);
                 rewriter.overwriteChangedFiles();
@@ -718,7 +735,6 @@ private:
         }
     }
 };
-
 
 // Implementation of the ASTConsumer interface for reading an AST produced
 // by the Clang parser. It registers a couple of matchers and runs them on
@@ -756,7 +772,8 @@ private:
 
 int main(int argc, const char **argv) {
   CommonOptionsParser op(argc, argv, MyToolCategory);
-  ClangTool Tool(op.getCompilations(), op.getSourcePathList());
+  ClangTool Tool(op.getCompilations(), 
+                op.getSourcePathList());
 
   return Tool.run(newFrontendActionFactory<MyFrontendAction>().get());
 }

@@ -15,28 +15,28 @@ The CXX compiler identification is Clang, found in "/home/zahra/Desktop/runtime_
 Determining if the CXX compiler works passed with the following output:
 Change Dir: /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_87144/fast"
-/usr/bin/make -f CMakeFiles/cmTC_87144.dir/build.make CMakeFiles/cmTC_87144.dir/build
+Run Build Command:"/usr/bin/make" "cmTC_c5f17/fast"
+/usr/bin/make -f CMakeFiles/cmTC_c5f17.dir/build.make CMakeFiles/cmTC_c5f17.dir/build
 make[1]: Entering directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_87144.dir/testCXXCompiler.cxx.o
-/usr/local/bin/clang++      -o CMakeFiles/cmTC_87144.dir/testCXXCompiler.cxx.o -c /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp/testCXXCompiler.cxx
-Linking CXX executable cmTC_87144
-/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_87144.dir/link.txt --verbose=1
-/usr/local/bin/clang++        CMakeFiles/cmTC_87144.dir/testCXXCompiler.cxx.o  -o cmTC_87144 -rdynamic 
+Building CXX object CMakeFiles/cmTC_c5f17.dir/testCXXCompiler.cxx.o
+/usr/local/bin/clang++      -o CMakeFiles/cmTC_c5f17.dir/testCXXCompiler.cxx.o -c /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp/testCXXCompiler.cxx
+Linking CXX executable cmTC_c5f17
+/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c5f17.dir/link.txt --verbose=1
+/usr/local/bin/clang++        CMakeFiles/cmTC_c5f17.dir/testCXXCompiler.cxx.o  -o cmTC_c5f17 -rdynamic 
 make[1]: Leaving directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
 
 
 Detecting CXX compiler ABI info compiled with the following output:
 Change Dir: /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_102dc/fast"
-/usr/bin/make -f CMakeFiles/cmTC_102dc.dir/build.make CMakeFiles/cmTC_102dc.dir/build
+Run Build Command:"/usr/bin/make" "cmTC_3ac92/fast"
+/usr/bin/make -f CMakeFiles/cmTC_3ac92.dir/build.make CMakeFiles/cmTC_3ac92.dir/build
 make[1]: Entering directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_102dc.dir/CMakeCXXCompilerABI.cpp.o
-/usr/local/bin/clang++      -o CMakeFiles/cmTC_102dc.dir/CMakeCXXCompilerABI.cpp.o -c /home/zahra/.local/share/cmake-3.7/Modules/CMakeCXXCompilerABI.cpp
-Linking CXX executable cmTC_102dc
-/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_102dc.dir/link.txt --verbose=1
-/usr/local/bin/clang++       -v CMakeFiles/cmTC_102dc.dir/CMakeCXXCompilerABI.cpp.o  -o cmTC_102dc -rdynamic  
+Building CXX object CMakeFiles/cmTC_3ac92.dir/CMakeCXXCompilerABI.cpp.o
+/usr/local/bin/clang++      -o CMakeFiles/cmTC_3ac92.dir/CMakeCXXCompilerABI.cpp.o -c /home/zahra/.local/share/cmake-3.7/Modules/CMakeCXXCompilerABI.cpp
+Linking CXX executable cmTC_3ac92
+/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3ac92.dir/link.txt --verbose=1
+/usr/local/bin/clang++       -v CMakeFiles/cmTC_3ac92.dir/CMakeCXXCompilerABI.cpp.o  -o cmTC_3ac92 -rdynamic  
 clang version 4.0.0 (http://llvm.org/git/clang.git 40f6a728aeed1a1a705ef8e81b04ebd5248fc29e) (http://llvm.org/git/llvm.git ae69f7de681e29e447a90f028e1e2b2d3e976689)
 Target: x86_64-unknown-linux-gnu
 Thread model: posix
@@ -52,7 +52,7 @@ Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.9.3
 Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.8
 Candidate multilib: .;@m64
 Selected multilib: .;@m64
- "/usr/bin/ld" -export-dynamic --hash-style=both --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_102dc /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crt1.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/4.8/crtbegin.o -L/usr/lib/gcc/x86_64-linux-gnu/4.8 -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../.. -L/usr/local/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_102dc.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/4.8/crtend.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crtn.o
+ "/usr/bin/ld" -export-dynamic --hash-style=both --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_3ac92 /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crt1.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/4.8/crtbegin.o -L/usr/lib/gcc/x86_64-linux-gnu/4.8 -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../.. -L/usr/local/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_3ac92.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/4.8/crtend.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crtn.o
 make[1]: Leaving directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
 
 
@@ -60,14 +60,14 @@ Parsed CXX implicit link information from above output:
   link line regex: [^( *|.*[/\])(ld|([^/\]+-)?ld|collect2)[^/\]*( |$)]
   ignore line: [Change Dir: /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp]
   ignore line: []
-  ignore line: [Run Build Command:"/usr/bin/make" "cmTC_102dc/fast"]
-  ignore line: [/usr/bin/make -f CMakeFiles/cmTC_102dc.dir/build.make CMakeFiles/cmTC_102dc.dir/build]
+  ignore line: [Run Build Command:"/usr/bin/make" "cmTC_3ac92/fast"]
+  ignore line: [/usr/bin/make -f CMakeFiles/cmTC_3ac92.dir/build.make CMakeFiles/cmTC_3ac92.dir/build]
   ignore line: [make[1]: Entering directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp']
-  ignore line: [Building CXX object CMakeFiles/cmTC_102dc.dir/CMakeCXXCompilerABI.cpp.o]
-  ignore line: [/usr/local/bin/clang++      -o CMakeFiles/cmTC_102dc.dir/CMakeCXXCompilerABI.cpp.o -c /home/zahra/.local/share/cmake-3.7/Modules/CMakeCXXCompilerABI.cpp]
-  ignore line: [Linking CXX executable cmTC_102dc]
-  ignore line: [/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_102dc.dir/link.txt --verbose=1]
-  ignore line: [/usr/local/bin/clang++       -v CMakeFiles/cmTC_102dc.dir/CMakeCXXCompilerABI.cpp.o  -o cmTC_102dc -rdynamic  ]
+  ignore line: [Building CXX object CMakeFiles/cmTC_3ac92.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [/usr/local/bin/clang++      -o CMakeFiles/cmTC_3ac92.dir/CMakeCXXCompilerABI.cpp.o -c /home/zahra/.local/share/cmake-3.7/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [Linking CXX executable cmTC_3ac92]
+  ignore line: [/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3ac92.dir/link.txt --verbose=1]
+  ignore line: [/usr/local/bin/clang++       -v CMakeFiles/cmTC_3ac92.dir/CMakeCXXCompilerABI.cpp.o  -o cmTC_3ac92 -rdynamic  ]
   ignore line: [clang version 4.0.0 (http://llvm.org/git/clang.git 40f6a728aeed1a1a705ef8e81b04ebd5248fc29e) (http://llvm.org/git/llvm.git ae69f7de681e29e447a90f028e1e2b2d3e976689)]
   ignore line: [Target: x86_64-unknown-linux-gnu]
   ignore line: [Thread model: posix]
@@ -85,7 +85,7 @@ Parsed CXX implicit link information from above output:
   ignore line: [@m64]
   ignore line: [Selected multilib: .]
   ignore line: [@m64]
-  link line: [ "/usr/bin/ld" -export-dynamic --hash-style=both --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_102dc /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crt1.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/4.8/crtbegin.o -L/usr/lib/gcc/x86_64-linux-gnu/4.8 -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../.. -L/usr/local/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_102dc.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/4.8/crtend.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crtn.o]
+  link line: [ "/usr/bin/ld" -export-dynamic --hash-style=both --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_3ac92 /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crt1.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/4.8/crtbegin.o -L/usr/lib/gcc/x86_64-linux-gnu/4.8 -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../.. -L/usr/local/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_3ac92.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/4.8/crtend.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crtn.o]
     arg [/usr/bin/ld] ==> ignore
     arg [-export-dynamic] ==> ignore
     arg [--hash-style=both] ==> ignore
@@ -96,7 +96,7 @@ Parsed CXX implicit link information from above output:
     arg [-dynamic-linker] ==> ignore
     arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
     arg [-o] ==> ignore
-    arg [cmTC_102dc] ==> ignore
+    arg [cmTC_3ac92] ==> ignore
     arg [/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crt1.o] ==> ignore
     arg [/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crti.o] ==> ignore
     arg [/usr/lib/gcc/x86_64-linux-gnu/4.8/crtbegin.o] ==> ignore
@@ -109,7 +109,7 @@ Parsed CXX implicit link information from above output:
     arg [-L/usr/local/bin/../lib] ==> dir [/usr/local/bin/../lib]
     arg [-L/lib] ==> dir [/lib]
     arg [-L/usr/lib] ==> dir [/usr/lib]
-    arg [CMakeFiles/cmTC_102dc.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [CMakeFiles/cmTC_3ac92.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
     arg [-lstdc++] ==> lib [stdc++]
     arg [-lm] ==> lib [m]
     arg [-lgcc_s] ==> lib [gcc_s]
@@ -142,14 +142,14 @@ Parsed CXX implicit link information from above output:
 Detecting CXX [-std=c++14] compiler features compiled with the following output:
 Change Dir: /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_dae29/fast"
-/usr/bin/make -f CMakeFiles/cmTC_dae29.dir/build.make CMakeFiles/cmTC_dae29.dir/build
+Run Build Command:"/usr/bin/make" "cmTC_89c3a/fast"
+/usr/bin/make -f CMakeFiles/cmTC_89c3a.dir/build.make CMakeFiles/cmTC_89c3a.dir/build
 make[1]: Entering directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_dae29.dir/feature_tests.cxx.o
-/usr/local/bin/clang++     -std=c++14 -o CMakeFiles/cmTC_dae29.dir/feature_tests.cxx.o -c /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/feature_tests.cxx
-Linking CXX executable cmTC_dae29
-/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_dae29.dir/link.txt --verbose=1
-/usr/local/bin/clang++        CMakeFiles/cmTC_dae29.dir/feature_tests.cxx.o  -o cmTC_dae29 -rdynamic 
+Building CXX object CMakeFiles/cmTC_89c3a.dir/feature_tests.cxx.o
+/usr/local/bin/clang++     -std=c++14 -o CMakeFiles/cmTC_89c3a.dir/feature_tests.cxx.o -c /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/feature_tests.cxx
+Linking CXX executable cmTC_89c3a
+/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_89c3a.dir/link.txt --verbose=1
+/usr/local/bin/clang++        CMakeFiles/cmTC_89c3a.dir/feature_tests.cxx.o  -o cmTC_89c3a -rdynamic 
 make[1]: Leaving directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
 
 
@@ -215,14 +215,14 @@ make[1]: Leaving directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML
 Detecting CXX [-std=c++11] compiler features compiled with the following output:
 Change Dir: /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_a06eb/fast"
-/usr/bin/make -f CMakeFiles/cmTC_a06eb.dir/build.make CMakeFiles/cmTC_a06eb.dir/build
+Run Build Command:"/usr/bin/make" "cmTC_0b0d2/fast"
+/usr/bin/make -f CMakeFiles/cmTC_0b0d2.dir/build.make CMakeFiles/cmTC_0b0d2.dir/build
 make[1]: Entering directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_a06eb.dir/feature_tests.cxx.o
-/usr/local/bin/clang++     -std=c++11 -o CMakeFiles/cmTC_a06eb.dir/feature_tests.cxx.o -c /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/feature_tests.cxx
-Linking CXX executable cmTC_a06eb
-/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a06eb.dir/link.txt --verbose=1
-/usr/local/bin/clang++        CMakeFiles/cmTC_a06eb.dir/feature_tests.cxx.o  -o cmTC_a06eb -rdynamic 
+Building CXX object CMakeFiles/cmTC_0b0d2.dir/feature_tests.cxx.o
+/usr/local/bin/clang++     -std=c++11 -o CMakeFiles/cmTC_0b0d2.dir/feature_tests.cxx.o -c /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/feature_tests.cxx
+Linking CXX executable cmTC_0b0d2
+/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0b0d2.dir/link.txt --verbose=1
+/usr/local/bin/clang++        CMakeFiles/cmTC_0b0d2.dir/feature_tests.cxx.o  -o cmTC_0b0d2 -rdynamic 
 make[1]: Leaving directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
 
 
@@ -288,14 +288,14 @@ make[1]: Leaving directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML
 Detecting CXX [-std=c++98] compiler features compiled with the following output:
 Change Dir: /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_a6d77/fast"
-/usr/bin/make -f CMakeFiles/cmTC_a6d77.dir/build.make CMakeFiles/cmTC_a6d77.dir/build
+Run Build Command:"/usr/bin/make" "cmTC_16630/fast"
+/usr/bin/make -f CMakeFiles/cmTC_16630.dir/build.make CMakeFiles/cmTC_16630.dir/build
 make[1]: Entering directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_a6d77.dir/feature_tests.cxx.o
-/usr/local/bin/clang++     -std=c++98 -o CMakeFiles/cmTC_a6d77.dir/feature_tests.cxx.o -c /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/feature_tests.cxx
-Linking CXX executable cmTC_a6d77
-/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a6d77.dir/link.txt --verbose=1
-/usr/local/bin/clang++        CMakeFiles/cmTC_a6d77.dir/feature_tests.cxx.o  -o cmTC_a6d77 -rdynamic 
+Building CXX object CMakeFiles/cmTC_16630.dir/feature_tests.cxx.o
+/usr/local/bin/clang++     -std=c++98 -o CMakeFiles/cmTC_16630.dir/feature_tests.cxx.o -c /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/feature_tests.cxx
+Linking CXX executable cmTC_16630
+/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_16630.dir/link.txt --verbose=1
+/usr/local/bin/clang++        CMakeFiles/cmTC_16630.dir/feature_tests.cxx.o  -o cmTC_16630 -rdynamic 
 make[1]: Leaving directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
 
 
@@ -372,28 +372,28 @@ The C compiler identification is Clang, found in "/home/zahra/Desktop/runtime_op
 Determining if the C compiler works passed with the following output:
 Change Dir: /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_8b569/fast"
-/usr/bin/make -f CMakeFiles/cmTC_8b569.dir/build.make CMakeFiles/cmTC_8b569.dir/build
+Run Build Command:"/usr/bin/make" "cmTC_f9485/fast"
+/usr/bin/make -f CMakeFiles/cmTC_f9485.dir/build.make CMakeFiles/cmTC_f9485.dir/build
 make[1]: Entering directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_8b569.dir/testCCompiler.c.o
-/usr/local/bin/clang     -o CMakeFiles/cmTC_8b569.dir/testCCompiler.c.o   -c /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp/testCCompiler.c
-Linking C executable cmTC_8b569
-/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8b569.dir/link.txt --verbose=1
-/usr/local/bin/clang       CMakeFiles/cmTC_8b569.dir/testCCompiler.c.o  -o cmTC_8b569 -rdynamic 
+Building C object CMakeFiles/cmTC_f9485.dir/testCCompiler.c.o
+/usr/local/bin/clang     -o CMakeFiles/cmTC_f9485.dir/testCCompiler.c.o   -c /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp/testCCompiler.c
+Linking C executable cmTC_f9485
+/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f9485.dir/link.txt --verbose=1
+/usr/local/bin/clang       CMakeFiles/cmTC_f9485.dir/testCCompiler.c.o  -o cmTC_f9485 -rdynamic 
 make[1]: Leaving directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
 
 
 Detecting C compiler ABI info compiled with the following output:
 Change Dir: /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_b6165/fast"
-/usr/bin/make -f CMakeFiles/cmTC_b6165.dir/build.make CMakeFiles/cmTC_b6165.dir/build
+Run Build Command:"/usr/bin/make" "cmTC_4e06f/fast"
+/usr/bin/make -f CMakeFiles/cmTC_4e06f.dir/build.make CMakeFiles/cmTC_4e06f.dir/build
 make[1]: Entering directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_b6165.dir/CMakeCCompilerABI.c.o
-/usr/local/bin/clang     -o CMakeFiles/cmTC_b6165.dir/CMakeCCompilerABI.c.o   -c /home/zahra/.local/share/cmake-3.7/Modules/CMakeCCompilerABI.c
-Linking C executable cmTC_b6165
-/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b6165.dir/link.txt --verbose=1
-/usr/local/bin/clang      -v CMakeFiles/cmTC_b6165.dir/CMakeCCompilerABI.c.o  -o cmTC_b6165 -rdynamic  
+Building C object CMakeFiles/cmTC_4e06f.dir/CMakeCCompilerABI.c.o
+/usr/local/bin/clang     -o CMakeFiles/cmTC_4e06f.dir/CMakeCCompilerABI.c.o   -c /home/zahra/.local/share/cmake-3.7/Modules/CMakeCCompilerABI.c
+Linking C executable cmTC_4e06f
+/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4e06f.dir/link.txt --verbose=1
+/usr/local/bin/clang      -v CMakeFiles/cmTC_4e06f.dir/CMakeCCompilerABI.c.o  -o cmTC_4e06f -rdynamic  
 clang version 4.0.0 (http://llvm.org/git/clang.git 40f6a728aeed1a1a705ef8e81b04ebd5248fc29e) (http://llvm.org/git/llvm.git ae69f7de681e29e447a90f028e1e2b2d3e976689)
 Target: x86_64-unknown-linux-gnu
 Thread model: posix
@@ -409,7 +409,7 @@ Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.9.3
 Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.8
 Candidate multilib: .;@m64
 Selected multilib: .;@m64
- "/usr/bin/ld" -export-dynamic --hash-style=both --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_b6165 /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crt1.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/4.8/crtbegin.o -L/usr/lib/gcc/x86_64-linux-gnu/4.8 -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../.. -L/usr/local/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_b6165.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib/gcc/x86_64-linux-gnu/4.8/crtend.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crtn.o
+ "/usr/bin/ld" -export-dynamic --hash-style=both --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_4e06f /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crt1.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/4.8/crtbegin.o -L/usr/lib/gcc/x86_64-linux-gnu/4.8 -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../.. -L/usr/local/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_4e06f.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib/gcc/x86_64-linux-gnu/4.8/crtend.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crtn.o
 make[1]: Leaving directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
 
 
@@ -417,14 +417,14 @@ Parsed C implicit link information from above output:
   link line regex: [^( *|.*[/\])(ld|([^/\]+-)?ld|collect2)[^/\]*( |$)]
   ignore line: [Change Dir: /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp]
   ignore line: []
-  ignore line: [Run Build Command:"/usr/bin/make" "cmTC_b6165/fast"]
-  ignore line: [/usr/bin/make -f CMakeFiles/cmTC_b6165.dir/build.make CMakeFiles/cmTC_b6165.dir/build]
+  ignore line: [Run Build Command:"/usr/bin/make" "cmTC_4e06f/fast"]
+  ignore line: [/usr/bin/make -f CMakeFiles/cmTC_4e06f.dir/build.make CMakeFiles/cmTC_4e06f.dir/build]
   ignore line: [make[1]: Entering directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp']
-  ignore line: [Building C object CMakeFiles/cmTC_b6165.dir/CMakeCCompilerABI.c.o]
-  ignore line: [/usr/local/bin/clang     -o CMakeFiles/cmTC_b6165.dir/CMakeCCompilerABI.c.o   -c /home/zahra/.local/share/cmake-3.7/Modules/CMakeCCompilerABI.c]
-  ignore line: [Linking C executable cmTC_b6165]
-  ignore line: [/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b6165.dir/link.txt --verbose=1]
-  ignore line: [/usr/local/bin/clang      -v CMakeFiles/cmTC_b6165.dir/CMakeCCompilerABI.c.o  -o cmTC_b6165 -rdynamic  ]
+  ignore line: [Building C object CMakeFiles/cmTC_4e06f.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/usr/local/bin/clang     -o CMakeFiles/cmTC_4e06f.dir/CMakeCCompilerABI.c.o   -c /home/zahra/.local/share/cmake-3.7/Modules/CMakeCCompilerABI.c]
+  ignore line: [Linking C executable cmTC_4e06f]
+  ignore line: [/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4e06f.dir/link.txt --verbose=1]
+  ignore line: [/usr/local/bin/clang      -v CMakeFiles/cmTC_4e06f.dir/CMakeCCompilerABI.c.o  -o cmTC_4e06f -rdynamic  ]
   ignore line: [clang version 4.0.0 (http://llvm.org/git/clang.git 40f6a728aeed1a1a705ef8e81b04ebd5248fc29e) (http://llvm.org/git/llvm.git ae69f7de681e29e447a90f028e1e2b2d3e976689)]
   ignore line: [Target: x86_64-unknown-linux-gnu]
   ignore line: [Thread model: posix]
@@ -442,7 +442,7 @@ Parsed C implicit link information from above output:
   ignore line: [@m64]
   ignore line: [Selected multilib: .]
   ignore line: [@m64]
-  link line: [ "/usr/bin/ld" -export-dynamic --hash-style=both --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_b6165 /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crt1.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/4.8/crtbegin.o -L/usr/lib/gcc/x86_64-linux-gnu/4.8 -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../.. -L/usr/local/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_b6165.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib/gcc/x86_64-linux-gnu/4.8/crtend.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crtn.o]
+  link line: [ "/usr/bin/ld" -export-dynamic --hash-style=both --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_4e06f /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crt1.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/4.8/crtbegin.o -L/usr/lib/gcc/x86_64-linux-gnu/4.8 -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../.. -L/usr/local/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_4e06f.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib/gcc/x86_64-linux-gnu/4.8/crtend.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crtn.o]
     arg [/usr/bin/ld] ==> ignore
     arg [-export-dynamic] ==> ignore
     arg [--hash-style=both] ==> ignore
@@ -453,7 +453,7 @@ Parsed C implicit link information from above output:
     arg [-dynamic-linker] ==> ignore
     arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
     arg [-o] ==> ignore
-    arg [cmTC_b6165] ==> ignore
+    arg [cmTC_4e06f] ==> ignore
     arg [/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crt1.o] ==> ignore
     arg [/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crti.o] ==> ignore
     arg [/usr/lib/gcc/x86_64-linux-gnu/4.8/crtbegin.o] ==> ignore
@@ -466,7 +466,7 @@ Parsed C implicit link information from above output:
     arg [-L/usr/local/bin/../lib] ==> dir [/usr/local/bin/../lib]
     arg [-L/lib] ==> dir [/lib]
     arg [-L/usr/lib] ==> dir [/usr/lib]
-    arg [CMakeFiles/cmTC_b6165.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [CMakeFiles/cmTC_4e06f.dir/CMakeCCompilerABI.c.o] ==> ignore
     arg [-lgcc] ==> lib [gcc]
     arg [--as-needed] ==> ignore
     arg [-lgcc_s] ==> lib [gcc_s]
@@ -501,14 +501,14 @@ Parsed C implicit link information from above output:
 Detecting C [-std=c11] compiler features compiled with the following output:
 Change Dir: /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_1976a/fast"
-/usr/bin/make -f CMakeFiles/cmTC_1976a.dir/build.make CMakeFiles/cmTC_1976a.dir/build
+Run Build Command:"/usr/bin/make" "cmTC_81ab0/fast"
+/usr/bin/make -f CMakeFiles/cmTC_81ab0.dir/build.make CMakeFiles/cmTC_81ab0.dir/build
 make[1]: Entering directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_1976a.dir/feature_tests.c.o
-/usr/local/bin/clang    -std=c11 -o CMakeFiles/cmTC_1976a.dir/feature_tests.c.o   -c /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/feature_tests.c
-Linking C executable cmTC_1976a
-/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_1976a.dir/link.txt --verbose=1
-/usr/local/bin/clang       CMakeFiles/cmTC_1976a.dir/feature_tests.c.o  -o cmTC_1976a -rdynamic 
+Building C object CMakeFiles/cmTC_81ab0.dir/feature_tests.c.o
+/usr/local/bin/clang    -std=c11 -o CMakeFiles/cmTC_81ab0.dir/feature_tests.c.o   -c /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/feature_tests.c
+Linking C executable cmTC_81ab0
+/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_81ab0.dir/link.txt --verbose=1
+/usr/local/bin/clang       CMakeFiles/cmTC_81ab0.dir/feature_tests.c.o  -o cmTC_81ab0 -rdynamic 
 make[1]: Leaving directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
 
 
@@ -521,14 +521,14 @@ make[1]: Leaving directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML
 Detecting C [-std=c99] compiler features compiled with the following output:
 Change Dir: /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_77fb3/fast"
-/usr/bin/make -f CMakeFiles/cmTC_77fb3.dir/build.make CMakeFiles/cmTC_77fb3.dir/build
+Run Build Command:"/usr/bin/make" "cmTC_94b76/fast"
+/usr/bin/make -f CMakeFiles/cmTC_94b76.dir/build.make CMakeFiles/cmTC_94b76.dir/build
 make[1]: Entering directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_77fb3.dir/feature_tests.c.o
-/usr/local/bin/clang    -std=c99 -o CMakeFiles/cmTC_77fb3.dir/feature_tests.c.o   -c /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/feature_tests.c
-Linking C executable cmTC_77fb3
-/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_77fb3.dir/link.txt --verbose=1
-/usr/local/bin/clang       CMakeFiles/cmTC_77fb3.dir/feature_tests.c.o  -o cmTC_77fb3 -rdynamic 
+Building C object CMakeFiles/cmTC_94b76.dir/feature_tests.c.o
+/usr/local/bin/clang    -std=c99 -o CMakeFiles/cmTC_94b76.dir/feature_tests.c.o   -c /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/feature_tests.c
+Linking C executable cmTC_94b76
+/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_94b76.dir/link.txt --verbose=1
+/usr/local/bin/clang       CMakeFiles/cmTC_94b76.dir/feature_tests.c.o  -o cmTC_94b76 -rdynamic 
 make[1]: Leaving directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
 
 
@@ -541,14 +541,14 @@ make[1]: Leaving directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML
 Detecting C [-std=c90] compiler features compiled with the following output:
 Change Dir: /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_21efb/fast"
-/usr/bin/make -f CMakeFiles/cmTC_21efb.dir/build.make CMakeFiles/cmTC_21efb.dir/build
+Run Build Command:"/usr/bin/make" "cmTC_0edb0/fast"
+/usr/bin/make -f CMakeFiles/cmTC_0edb0.dir/build.make CMakeFiles/cmTC_0edb0.dir/build
 make[1]: Entering directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_21efb.dir/feature_tests.c.o
-/usr/local/bin/clang    -std=c90 -o CMakeFiles/cmTC_21efb.dir/feature_tests.c.o   -c /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/feature_tests.c
-Linking C executable cmTC_21efb
-/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_21efb.dir/link.txt --verbose=1
-/usr/local/bin/clang       CMakeFiles/cmTC_21efb.dir/feature_tests.c.o  -o cmTC_21efb -rdynamic 
+Building C object CMakeFiles/cmTC_0edb0.dir/feature_tests.c.o
+/usr/local/bin/clang    -std=c90 -o CMakeFiles/cmTC_0edb0.dir/feature_tests.c.o   -c /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/feature_tests.c
+Linking C executable cmTC_0edb0
+/home/zahra/.local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0edb0.dir/link.txt --verbose=1
+/usr/local/bin/clang       CMakeFiles/cmTC_0edb0.dir/feature_tests.c.o  -o cmTC_0edb0 -rdynamic 
 make[1]: Leaving directory `/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/casual_test/prefetching_example/build/CMakeFiles/CMakeTmp'
 
 
