@@ -1,28 +1,19 @@
-#################################
-#Compile nast_hpx
-#@date 2016-04
-#@author troska@ins.uni-bonn.de
-#################################
+cmake_minimum_required(VERSION 2.8.12)
+project(main CXX)
 
-#HPX requires this version
-cmake_minimum_required(VERSION 2.8.4 FATAL_ERROR)
+set(HPX_ROOT "/home/zahra/Projects/HPX/build")
+set(HPX_DIR "${HPX_ROOT}/lib/cmake/HPX")
+set(BOOST_ROOT "/home/zahra/Projects/boost_1_63_0")
 
-#C++-based project
-project(sga CXX)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(HPX_ROOT "/home/zahra/Projects/HPX/repo/hpx")
-set(HPX_DIR "/home/zahra/Projects/HPX/build/lib/cmake/HPX")
-
-find_package(HPX REQUIRED NO_CMAKE_PACKAGE_REGISTRY)
+find_package(HPX)
 
 include_directories(${HPX_INCLUDE_DIR})
 link_directories(${HPX_LIBRARY_DIR})
 
-add_compile_options(-std=c++11)
-
-add_hpx_executable(
-    main
+set(SOURCE_FILES main.cpp)
+add_hpx_executable(main
     ESSENTIAL
-    SOURCES main.cpp
-)
-
+    SOURCES ${SOURCE_FILES}
+    COMPONENT_DEPENDENCIES iostreams)

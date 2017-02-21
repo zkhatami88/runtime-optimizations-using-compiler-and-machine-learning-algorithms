@@ -102,8 +102,7 @@ struct stepper
 ///////////////////////////////////////////////////////////////////////////////
 
 int hpx_main(boost::program_options::variables_map& vm)
-{
-    
+{    
     // Applying runtime options
     std::uint64_t nx = vm["nx"].as<std::uint64_t>();   // Number of grid points.
     std::uint64_t nt = vm["nt"].as<std::uint64_t>();   // Number of steps.
