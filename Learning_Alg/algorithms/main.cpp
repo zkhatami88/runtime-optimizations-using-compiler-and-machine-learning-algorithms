@@ -113,9 +113,9 @@ void reading_real_input_values_multi(std::size_t number_of_experiments, std::siz
         //first feature is file_name
         getline(ss, str, ' ');
 
-        //skipping static informations for the first four loops 
+        //skipping static informations for the first 4 loops for chunk and 5 loops for prefetch 
         for(int l = 0; l < 4; l++) {
-            for(int c = 0; c < 4; c++) {
+            for(int c = 0; c < 4; c++) { //this 4 for both chunk and prefetch
                 getline(ss, str, ' ');
             }
         }
@@ -147,11 +147,12 @@ void reading_real_input_values_multi(std::size_t number_of_experiments, std::siz
         e++;    
     }
 
+    std::cout <<"\ndiversity is:\n"<<std::endl;
     //printing diversity of input data:
     for(std::size_t i = 0; i < number_of_multi_classes; i++) {
         std::cout << num_class[i] << ", ";
     }
-    std::cout<<std::endl;
+    std::cout <<"\n====================\n"<<std::endl;
 }
 
 void printing_input_data_value(std::size_t number_of_experiments, std::size_t number_of_features, 
@@ -168,16 +169,14 @@ void printing_input_data_value(std::size_t number_of_experiments, std::size_t nu
     std::cout <<"\n ====================\n"<<std::endl;
 }
 
-int main(int argc, const char * argv[]) {	
-	float threshold = 0.05;
+void implementing_binary_logistic_regression_model(){
+    float threshold = 0.2;
     std::string line;
-    
-    ///////////////////////////////////////////////////////////////////////////////
-    /*
+
     //learning two classes    
     std::cout <<"\nBinary logistic regression model : \n"<<std::endl;
 
-    std::ifstream myfile ("inputs/data.dat");
+    std::ifstream myfile ("inputs/data_binary.dat");
     getline(myfile, line);
     std::stringstream ss(line);
     std::string str;
@@ -197,33 +196,40 @@ int main(int argc, const char * argv[]) {
 
     //reading input data
     //reading_random_input_values(number_of_experiments_two_class, number_of_features_two_class, 
-    //                                experimental_results_two_class, targets_two_class, myfile);
+    //                                experimental_results_two_class, targets_two_class, myfile); //training_data_two_class
 
     reading_real_input_values_binary(number_of_experiments_two_class, number_of_features_two_class, 
-                                    experimental_results_two_class, targets_two_class, execution_times_two_class, myfile); //threshold = 0.2
+                                    experimental_results_two_class, targets_two_class, execution_times_two_class, myfile);
 
     //printing inpput data values
     //printing_input_data_value(number_of_experiments_two_class, number_of_features_two_class, 
     //                            experimental_results_two_class, targets_two_class);    
     
     //implementing binary regression model on input data
-	learning_binary_regression_model my_nw(number_of_experiments_two_class, number_of_features_two_class,
-						                  threshold, experimental_results_two_class, targets_two_class, execution_times_two_class);
+    learning_binary_regression_model my_nw(number_of_experiments_two_class, number_of_features_two_class,
+                                          threshold, experimental_results_two_class, targets_two_class, execution_times_two_class);
 
-	my_nw.learning_two_classes();
-	std::cout<<"Learning has been done!\n"<<std::endl;
+    my_nw.learning_two_classes();
+    std::cout<<"Learning has been done!\n"<<std::endl;
     std::cout<<"\nThe predicated weights for each features are: "<<std::endl;
     my_nw.retrieving_weights_two_classes_into_txt_file();
     my_nw.printing_predicted_output_two_class();
     my_nw.finalizing_step();
-    */
-    ///////////////////////////////////////////////////////////////////////////////
+}
+
+void implementing_multinomial_logistic_regression_model(){
+    float threshold = 0.05;
+    std::string line;
     
     //learning multi classes    
     std::cout <<"\nMulti-class logistic regression model : \n"<<std::endl;
+    std::cout <<"\n====================\n"<<std::endl;
+    std::cout <<"\n========\n"<<std::endl;
 
     //reading input data : number of experiments, number of feautures and number of output_classes in each experiments
-    std::ifstream myfile ("inputs/data_new_2.dat");
+    //std::ifstream myfile ("inputs/data_prefetch.dat");
+    std::ifstream myfile ("inputs/data_chunk_2.dat");
+    
     getline(myfile, line);
     std::stringstream ss(line);
     std::string str;
@@ -246,15 +252,16 @@ int main(int argc, const char * argv[]) {
 
     //reading input data    
     //reading_random_input_values(number_of_experiments_multi_class, number_of_features_multi_class, 
-    //                                experimental_results_multi_class, targets_multi_class, myfile);
+    //                                experimental_results_multi_class, targets_multi_class, myfile); //training_data_multi_class
 
     //reading real input data
     reading_real_input_values_multi(number_of_experiments_multi_class, number_of_features_multi_class, number_of_multi_classes, 
                                     experimental_results_multi_class, targets_multi_class, execution_times_multi_class, myfile);
     
     //printing inpput data values
-    printing_input_data_value(number_of_experiments_multi_class, number_of_features_multi_class, 
-                                experimental_results_multi_class, targets_multi_class);   
+    //printing_input_data_value(number_of_experiments_multi_class, number_of_features_multi_class, 
+    //                            experimental_results_multi_class, targets_multi_class);   
+    
     
     //choose one of them: Gradient Descen OR Newton-Raphson
     //[1] Gradient Descent:      
@@ -273,7 +280,16 @@ int main(int argc, const char * argv[]) {
     std::cout<<"\nThe predicated weights for each features are: "<<std::endl;    
     my_nw.retrieving_weights_multi_classes_into_text_file();
     my_nw.printing_predicted_output_multi_class();
-    my_nw.finalizing_step();
+    my_nw.finalizing_step();       
+}
+
+int main(int argc, const char * argv[]) {	
+	
+    //learning two classes
+    implementing_binary_logistic_regression_model();
+
+    //learning multi classes
+    //implementing_multinomial_logistic_regression_model();  
     
 	return 0;
 }

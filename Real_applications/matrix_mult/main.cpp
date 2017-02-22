@@ -23,15 +23,14 @@
 #include <hpx/parallel/executors/adaptive_chunk_size.hpp>
 
 
-#define vector_size 5
+#define vector_size 100
 
 template<typename T>
 void comparing_perfromances(std::vector<T>& A, std::vector<T>& B, std::vector<T>& C) {
 
-    auto time_range = boost::irange(0, 5);
+    auto time_range = boost::irange(0, 100);
     
     auto f = [&](int i) {
-        // i += 4
         if(i % 4 == 0) {
             for (int j = 0; j < vector_size; j += 4) {
 
