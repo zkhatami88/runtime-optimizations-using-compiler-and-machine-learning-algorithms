@@ -281,7 +281,7 @@ numa_domain_worker(std::size_t domain,
 
 
     // Main Loop
-    std::vector<std::vector<double> > timing(7, std::vector<double>(iterations));
+    std::vector<std::vector<double> > timing(3, std::vector<double>(iterations));
 
     /// parameters needed for comparing different for_each styles
     //minimum chunk_size is chosen with : cashe_size_line / sizeof(type)
@@ -291,76 +291,139 @@ numa_domain_worker(std::size_t domain,
     //number of chunk_size in data
     int chunk_count = vector_size / chunk_size; 
     //This range is used for Triad_for_each
-    auto original_range=boost::irange(0,vector_size); 
-    // for [1], [2] and [3]
-    auto f = [&](std::size_t i) { a[i]=b[i]+c[i]*2.5; };
-    
+    auto original_range=boost::irange(0,vector_size);
 
+    // for [1], [2] and [3]
     double scalar = 3.0;
+    auto f1 = [&](std::size_t i) { c[i] = a[i]; };
+    auto f2 = [&](std::size_t i) { b[i] = scalar * c[i]; };
+    auto f3 = [&](std::size_t i) { c[i] = a[i] + b[i]; };
+    auto f4 = [&](std::size_t i) { a[i] = b[i] + c[i] * 2.5; };    
+
+    
     for(std::size_t iteration = 0; iteration != iterations; ++iteration)
     {        
         // Copy
+        //timing[0][iteration] = mysecond();
+        //hpx::parallel::copy(policy, a_begin, a_end, c_begin);
+        //timing[0][iteration] = mysecond() - timing[0][iteration];
+
         timing[0][iteration] = mysecond();
-        hpx::parallel::copy(policy, a_begin, a_end, c_begin);
+        hpx::parallel::for_each(hpx::parallel::par, original_range.begin(), original_range.end(), f1);
         timing[0][iteration] = mysecond() - timing[0][iteration];
 
-        // Scale
         timing[1][iteration] = mysecond();
-        hpx::parallel::transform(policy,
-            c_begin, c_end, b_begin,
-            [scalar](STREAM_TYPE val)
-            {
-                return scalar * val;
-            }
-        );
+        
+//DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:
+	hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, hpx::parallel::prefetching_distance_determination({hpx::get_os_thread_count(), 1, 1, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0}), a, c), 
+           original_range.begin(), original_range.end(), f1);
         timing[1][iteration] = mysecond() - timing[1][iteration];
 
-        // Add
         timing[2][iteration] = mysecond();
-        hpx::parallel::transform(policy,
-            a_begin, a_end, b_begin, b_end, c_begin,
-            [](STREAM_TYPE val1, STREAM_TYPE val2)
-            {
-                return val1 + val2;
-            }
-        );
+        
+//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
+	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 1, 1, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0})),  original_range.begin(), original_range.end(), f1);
         timing[2][iteration] = mysecond() - timing[2][iteration];
 
+        // Scale
+        //timing[1][iteration] = mysecond();
+        //hpx::parallel::transform(policy,
+        //    c_begin, c_end, b_begin,
+        //    [scalar](STREAM_TYPE val)
+        //    {
+        //        return scalar * val;
+        //    }
+        //);
+        //timing[1][iteration] = mysecond() - timing[1][iteration];
+
+        double t0_s = mysecond();
+        hpx::parallel::for_each(hpx::parallel::par, original_range.begin(), original_range.end(), f2);
+        t0_s = mysecond() - t0_s;
+        timing[0][iteration] += t0_s;
+
+        double t1_s = mysecond();
+        
+//DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:
+	hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, hpx::parallel::prefetching_distance_determination({hpx::get_os_thread_count(), 2, 2, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0}), b, c), 
+           original_range.begin(), original_range.end(), f2);
+        t1_s = mysecond() - t1_s;
+        timing[1][iteration] += t1_s;
+
+        double t2_s = mysecond();
+        
+//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
+	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 2, 2, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0})),  original_range.begin(), original_range.end(), f2);
+        t2_s = mysecond() - t2_s;
+        timing[2][iteration] += t2_s;
+
+
+        // Add
+        //timing[2][iteration] = mysecond();
+        //hpx::parallel::transform(policy,
+        //    a_begin, a_end, b_begin, b_end, c_begin,
+        //    [](STREAM_TYPE val1, STREAM_TYPE val2)
+        //    {
+        //        return val1 + val2;
+        //    }
+        //);
+        //timing[2][iteration] = mysecond() - timing[2][iteration];
+
+        double t0_a = mysecond();
+        hpx::parallel::for_each(hpx::parallel::par, original_range.begin(), original_range.end(), f3);
+        t0_a = mysecond() - t0_a;
+        timing[0][iteration] += t0_a;        
+
+        double t1_a = mysecond();
+        
+//DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:
+	hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, hpx::parallel::prefetching_distance_determination({hpx::get_os_thread_count(), 2, 2, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0}), a, b, c), 
+           original_range.begin(), original_range.end(), f3);
+        t1_a = mysecond() - t1_a;
+        timing[1][iteration] += t1_a;
+
+        double t2_a = mysecond();
+        
+//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
+	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 2, 2, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0})),  original_range.begin(), original_range.end(), f3);
+        t2_a = mysecond() - t2_a;
+        timing[2][iteration] += t2_a;
+
         // Triad-Transform
-        timing[3][iteration] = mysecond();
-        hpx::parallel::transform(policy,
-            b_begin, b_end, c_begin, c_end, a_begin,
-            [scalar](STREAM_TYPE val1, STREAM_TYPE val2)
-            {
-                return val1 + scalar * val2;
-            }
-        );
-        timing[3][iteration] = mysecond() - timing[3][iteration];
+        //timing[3][iteration] = mysecond();
+        //hpx::parallel::transform(policy,
+        //    b_begin, b_end, c_begin, c_end, a_begin,
+        //    [scalar](STREAM_TYPE val1, STREAM_TYPE val2)
+        //    {
+        //        return val1 + scalar * val2;
+        //    }
+        //);
+        //timing[3][iteration] = mysecond() - timing[3][iteration];
 
         ////////////////////////////////////////////////////////////////
         // Comparing performances:
 
         // [1] Triad_for_each 
-        timing[4][iteration] = mysecond();
-
-        hpx::parallel::for_each(hpx::parallel::par, original_range.begin(), original_range.end(), f);
-
-        timing[4][iteration] = mysecond() - timing[4][iteration];
+        double t0_t = mysecond();
+        hpx::parallel::for_each(hpx::parallel::par, original_range.begin(), original_range.end(), f4);
+        t0_t = mysecond() - t0_t;
+        timing[0][iteration] += t0_t;
 
         // [2] Triad_prefetch_for_each 
-        timing[5][iteration] = mysecond();
-
-        hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, prefetch_distance_factor, a, b, c),
-            original_range.begin(), original_range.end(), f);
-
-        timing[5][iteration] = mysecond() - timing[5][iteration];
+        double t1_t = mysecond();
+        
+//DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:
+	hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, hpx::parallel::prefetching_distance_determination({hpx::get_os_thread_count(), 3, 3, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0}), a, b, c),
+           original_range.begin(), original_range.end(), f4);
+        t1_t = mysecond() - t1_t;
+        timing[1][iteration] += t1_t;
 
         // [3] Triad adaptive_chunk_size_for_each
-        timing[6][iteration] = mysecond();
-
-        hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::adaptive_chunk_size()), original_range.begin(), original_range.end(), f);
-
-        timing[6][iteration] = mysecond() - timing[6][iteration];
+        double t2_t = mysecond();
+        
+//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
+	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 3, 3, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0})),  original_range.begin(), original_range.end(), f4);
+        t2_t = mysecond() - t2_t;
+        timing[2][iteration] += t2_t;
 
         ////////////////////////////////////////////////////////////////
     }
@@ -532,26 +595,18 @@ int hpx_main(boost::program_options::variables_map& vm)
     time_total = mysecond() - time_total;
 
     // --- SUMMARY --- 
-    const char *label[7] = {
-        "Copy:                                 ",
-        "Scale:                                ",
-        "Add:                                  ",
-        "Triad_transform:                      ",
-        "Triad_for_each:                       ", //with normal iterator
-        "Triad_prefetch_for_each:              ", //with prfetching itr
-        "Triad_adaptive_chunk_size_for_each:   "  //with adaptive_chunk_size
+    const char *label[3] = {
+        "original_for_each:                       ", //with normal iterator
+        "prefetch_for_each:                       ", //with prfetching itr
+        "chunk_size_for_each:                     "  //with adaptive_chunk_size
     };
 
-    const double bytes[7] = {
-        2 * sizeof(STREAM_TYPE) * static_cast<double>(vector_size),
-        2 * sizeof(STREAM_TYPE) * static_cast<double>(vector_size),
-        3 * sizeof(STREAM_TYPE) * static_cast<double>(vector_size),
-        3 * sizeof(STREAM_TYPE) * static_cast<double>(vector_size),
-        3 * sizeof(STREAM_TYPE) * static_cast<double>(vector_size),
-        3 * sizeof(STREAM_TYPE) * static_cast<double>(vector_size),
-        3 * sizeof(STREAM_TYPE) * static_cast<double>(vector_size)
+    const double bytes[3] = {
+        7 * sizeof(STREAM_TYPE) * static_cast<double>(vector_size),
+        7 * sizeof(STREAM_TYPE) * static_cast<double>(vector_size),
+        7 * sizeof(STREAM_TYPE) * static_cast<double>(vector_size)
     };
-    std::vector<std::vector<double> > timing(7, std::vector<double>(iterations, 0.0));
+    std::vector<std::vector<double> > timing(3, std::vector<double>(iterations, 0.0));
 
     for(auto const & times : timings_all)
     {
@@ -560,10 +615,6 @@ int hpx_main(boost::program_options::variables_map& vm)
             timing[0][iteration] += times[0][iteration];
             timing[1][iteration] += times[1][iteration];
             timing[2][iteration] += times[2][iteration];
-            timing[3][iteration] += times[3][iteration];
-            timing[4][iteration] += times[4][iteration];
-            timing[5][iteration] += times[5][iteration];
-            timing[6][iteration] += times[6][iteration];
         }
     }
     for(std::size_t iteration = 0; iteration != iterations; ++iteration)
@@ -571,18 +622,14 @@ int hpx_main(boost::program_options::variables_map& vm)
         timing[0][iteration] /= numa_nodes;
         timing[1][iteration] /= numa_nodes;
         timing[2][iteration] /= numa_nodes;
-        timing[3][iteration] /= numa_nodes;
-        timing[4][iteration] /= numa_nodes;
-        timing[5][iteration] /= numa_nodes;
-        timing[6][iteration] /= numa_nodes;
     }
     // Note: skip first iteration
-    std::vector<double> avgtime(7, 0.0);
-    std::vector<double> mintime(7, (std::numeric_limits<double>::max)());
-    std::vector<double> maxtime(7, 0.0);
+    std::vector<double> avgtime(3, 0.0);
+    std::vector<double> mintime(3, (std::numeric_limits<double>::max)());
+    std::vector<double> maxtime(3, 0.0);
     for(std::size_t iteration = 1; iteration != iterations; ++iteration)
     {
-        for (std::size_t j=0; j<7; j++)
+        for (std::size_t j=0; j<3; j++)
         {
             avgtime[j] = avgtime[j] + timing[j][iteration];
             mintime[j] = (std::min)(mintime[j], timing[j][iteration]);
@@ -593,7 +640,7 @@ int hpx_main(boost::program_options::variables_map& vm)
     printf("Function                           BestRate MB/s  Avg time     Min time     Max time\n");
     // Printing all
     
-    for (std::size_t j=3; j<7; j++) {
+    for (std::size_t j = 0; j < 3; j++) {
         avgtime[j] = avgtime[j]/(double)(iterations-1);
 
         printf("%s%12.1f  %11.6f  %11.6f  %11.6f\n", label[j],

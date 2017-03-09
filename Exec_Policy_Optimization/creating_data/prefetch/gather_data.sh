@@ -5,7 +5,7 @@ MAX_NUM_THREADS=32
 cd build
 
 #rm $FILE
-echo "num_ops num_float_ops num_comp_ops deepest_loop_level num_threads num_lambda_iter t(1) t(5) t(10) t(500) t(100) t(500)" >> $FILE
+echo "num_ops num_float_ops num_comp_ops deepest_loop_level num_threads num_lambda_iter t(1) t(5) t(10) t(50) t(100) t(500)" >> $FILE
 
 for file in ../functions/*
 do

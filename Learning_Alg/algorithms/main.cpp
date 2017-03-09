@@ -114,18 +114,23 @@ void reading_real_input_values_multi(std::size_t number_of_experiments, std::siz
         getline(ss, str, ' ');
 
         //skipping static informations for the first 4 loops for chunk and 5 loops for prefetch 
-        for(int l = 0; l < 4; l++) {
+        for(int l = 0; l < 5; l++) {
             for(int c = 0; c < 4; c++) { //this 4 for both chunk and prefetch
                 getline(ss, str, ' ');
             }
         }
 
         //reading features:
-        while(f < number_of_features) {
+        while(f < number_of_features) { ///--------
             getline(ss, str, ' ');
             experimental_results[e][f] = std::atof(str.c_str());
             f++;
         }
+
+        //getline(ss, str, ' '); //skipping #threads
+        //getline(ss, str, ' ');
+        //experimental_results[e][f] = std::atof(str.c_str());
+
 
         //reading exec time for assiging target value
         float t_min = std::numeric_limits<float>::max();
@@ -224,11 +229,11 @@ void implementing_multinomial_logistic_regression_model(){
     //learning multi classes    
     std::cout <<"\nMulti-class logistic regression model : \n"<<std::endl;
     std::cout <<"\n====================\n"<<std::endl;
-    std::cout <<"\n========\n"<<std::endl;
+    std::cout <<"========\n"<<std::endl;
 
     //reading input data : number of experiments, number of feautures and number of output_classes in each experiments
     //std::ifstream myfile ("inputs/data_prefetch.dat");
-    std::ifstream myfile ("inputs/data_chunk_2.dat");
+    std::ifstream myfile ("inputs/data_prefetch_2.dat");
     
     getline(myfile, line);
     std::stringstream ss(line);
@@ -240,6 +245,8 @@ void implementing_multinomial_logistic_regression_model(){
     getline(ss, str, ' ');
     std::size_t number_of_multi_classes = std::stoi(str);
 
+    //std::cout << number_of_experiments_multi_class << ", " << number_of_features_multi_class << ", " << number_of_multi_classes << "\n";
+
     //initializing   
      
     int* targets_multi_class = new int[number_of_experiments_multi_class];
@@ -250,10 +257,11 @@ void implementing_multinomial_logistic_regression_model(){
         execution_times_multi_class[n] = new float[number_of_multi_classes];
     }
 
+    
     //reading input data    
     //reading_random_input_values(number_of_experiments_multi_class, number_of_features_multi_class, 
     //                                experimental_results_multi_class, targets_multi_class, myfile); //training_data_multi_class
-
+    
     //reading real input data
     reading_real_input_values_multi(number_of_experiments_multi_class, number_of_features_multi_class, number_of_multi_classes, 
                                     experimental_results_multi_class, targets_multi_class, execution_times_multi_class, myfile);
@@ -286,10 +294,10 @@ void implementing_multinomial_logistic_regression_model(){
 int main(int argc, const char * argv[]) {	
 	
     //learning two classes
-    implementing_binary_logistic_regression_model();
+    //implementing_binary_logistic_regression_model();
 
     //learning multi classes
-    //implementing_multinomial_logistic_regression_model();  
+    implementing_multinomial_logistic_regression_model();  
     
 	return 0;
 }

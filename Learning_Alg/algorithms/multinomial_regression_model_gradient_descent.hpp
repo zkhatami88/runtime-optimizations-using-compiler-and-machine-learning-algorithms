@@ -294,7 +294,7 @@ void multinomial_regression_model_gradient_descent::learning_multi_classes() {
 
 //retrieving information into the external file, which is going to be used at runtime
 void multinomial_regression_model_gradient_descent::retrieving_weights_multi_classes_into_text_file() {	
-	std::ofstream outputFile("/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Learning_Alg/learning_weights/weights_chunk_size.dat");
+	std::ofstream outputFile("/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Learning_Alg/learning_weights/weights_prefetcher_distance_factor.dat");
 
 	//normalization parameters (variance and average) in the first line
 	for(std::size_t p = 0; p < number_of_features - 1; p++) {

@@ -23,12 +23,12 @@
 #include <hpx/parallel/executors/adaptive_chunk_size.hpp>
 
 
-#define vector_size 100
+#define vector_size 200
 
 template<typename T>
 void comparing_perfromances(std::vector<T>& A, std::vector<T>& B, std::vector<T>& C) {
 
-    auto time_range = boost::irange(0, 100);
+    auto time_range = boost::irange(0, 200);
     
     auto f = [&](int i) {
         if(i % 4 == 0) {
@@ -110,11 +110,11 @@ void comparing_perfromances(std::vector<T>& A, std::vector<T>& B, std::vector<T>
 
     ////////////////////////////////////////////////////////////////////////
     // [2] Efficient chunk size
-
     std::size_t t_chunk = hpx::util::high_resolution_clock::now();
 
-    hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::adaptive_chunk_size()), 
-        time_range.begin(), time_range.end(), f);
+    
+//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
+	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 1223706, 320800, 10053, std::size_t(std::distance(time_range.begin(), time_range.end())), 2})),  time_range.begin(), time_range.end(), f);
 
     std::size_t elapsed_chunk = hpx::util::high_resolution_clock::now() - t_chunk;
 
@@ -125,8 +125,10 @@ void comparing_perfromances(std::vector<T>& A, std::vector<T>& B, std::vector<T>
 
     std::size_t t_prefetch = hpx::util::high_resolution_clock::now();
 
-    hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, pref_dist_fac, A, B, C), 
-        time_range.begin(), time_range.end(), f);
+    
+//DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:
+	hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, hpx::parallel::prefetching_distance_determination({hpx::get_os_thread_count(), 1223706, 320800, 10053, std::size_t(std::distance(time_range.begin(), time_range.end())), 2}), A, B, C), 
+       time_range.begin(), time_range.end(), f);
 
     std::size_t elapsed_prefetch = hpx::util::high_resolution_clock::now() - t_prefetch;
 
