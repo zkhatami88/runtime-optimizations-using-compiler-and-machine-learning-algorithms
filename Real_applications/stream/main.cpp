@@ -295,96 +295,93 @@ numa_domain_worker(std::size_t domain,
 
     // for [1], [2] and [3]
     double scalar = 3.0;
+    /*
     auto f1 = [&](std::size_t i) { c[i] = a[i]; };
     auto f2 = [&](std::size_t i) { b[i] = scalar * c[i]; };
     auto f3 = [&](std::size_t i) { c[i] = a[i] + b[i]; };
-    auto f4 = [&](std::size_t i) { a[i] = b[i] + c[i] * 2.5; };    
+    auto f4 = [&](std::size_t i) { a[i] = b[i] + c[i] * 2.5; };
+    */  
+
+    auto f = [&](std::size_t i) {
+        c[i] = a[i];
+        b[i] = scalar * c[i];
+        c[i] = a[i] + b[i];
+        a[i] = b[i] + c[i] * 2.5;
+    }; 
 
     
     for(std::size_t iteration = 0; iteration != iterations; ++iteration)
     {        
-        // Copy
-        //timing[0][iteration] = mysecond();
-        //hpx::parallel::copy(policy, a_begin, a_end, c_begin);
-        //timing[0][iteration] = mysecond() - timing[0][iteration];
+        //All together
+        //original
+        timing[0][iteration] = mysecond();
+        hpx::parallel::for_each(hpx::parallel::par, original_range.begin(), original_range.end(), f);
+        timing[0][iteration] = mysecond() - timing[0][iteration];
 
+        //chunk
+        timing[1][iteration] = mysecond();
+        
+//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
+	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 8, 8, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0})),  original_range.begin(), original_range.end(), f);
+        timing[1][iteration] = mysecond() - timing[1][iteration];
+
+        //prefetch
+        timing[2][iteration] = mysecond();
+        
+//DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:
+	hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, hpx::parallel::prefetching_distance_determination({hpx::get_os_thread_count(), 8, 8, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0}), a, b, c), 
+          original_range.begin(), original_range.end(), f);
+        timing[2][iteration] = mysecond() - timing[2][iteration];
+
+        /*
+        // Copy
         timing[0][iteration] = mysecond();
         hpx::parallel::for_each(hpx::parallel::par, original_range.begin(), original_range.end(), f1);
         timing[0][iteration] = mysecond() - timing[0][iteration];
 
-        timing[1][iteration] = mysecond();
-        
-//DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:
-	hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, hpx::parallel::prefetching_distance_determination({hpx::get_os_thread_count(), 1, 1, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0}), a, c), 
+        timing[1][iteration] = mysecond();        
+	    hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, prefetch_distance_factor, a, c), 
            original_range.begin(), original_range.end(), f1);
         timing[1][iteration] = mysecond() - timing[1][iteration];
 
-        timing[2][iteration] = mysecond();
-        
-//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
-	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 1, 1, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0})),  original_range.begin(), original_range.end(), f1);
+        timing[2][iteration] = mysecond();        
+	    hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::adaptive_chunk_size()), 
+            original_range.begin(), original_range.end(), f1);
         timing[2][iteration] = mysecond() - timing[2][iteration];
 
         // Scale
-        //timing[1][iteration] = mysecond();
-        //hpx::parallel::transform(policy,
-        //    c_begin, c_end, b_begin,
-        //    [scalar](STREAM_TYPE val)
-        //    {
-        //        return scalar * val;
-        //    }
-        //);
-        //timing[1][iteration] = mysecond() - timing[1][iteration];
-
         double t0_s = mysecond();
         hpx::parallel::for_each(hpx::parallel::par, original_range.begin(), original_range.end(), f2);
         t0_s = mysecond() - t0_s;
         timing[0][iteration] += t0_s;
 
-        double t1_s = mysecond();
-        
-//DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:
-	hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, hpx::parallel::prefetching_distance_determination({hpx::get_os_thread_count(), 2, 2, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0}), b, c), 
+        double t1_s = mysecond();        
+	   hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, prefetch_distance_factor, b, c), 
            original_range.begin(), original_range.end(), f2);
         t1_s = mysecond() - t1_s;
         timing[1][iteration] += t1_s;
 
-        double t2_s = mysecond();
-        
-//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
-	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 2, 2, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0})),  original_range.begin(), original_range.end(), f2);
+        double t2_s = mysecond();        
+	    hpx::parallel::for_each(hpx::parallel::par.with(adaptive_chunk_size()),  
+            original_range.begin(), original_range.end(), f2);
         t2_s = mysecond() - t2_s;
         timing[2][iteration] += t2_s;
 
-
         // Add
-        //timing[2][iteration] = mysecond();
-        //hpx::parallel::transform(policy,
-        //    a_begin, a_end, b_begin, b_end, c_begin,
-        //    [](STREAM_TYPE val1, STREAM_TYPE val2)
-        //    {
-        //        return val1 + val2;
-        //    }
-        //);
-        //timing[2][iteration] = mysecond() - timing[2][iteration];
-
         double t0_a = mysecond();
         hpx::parallel::for_each(hpx::parallel::par, original_range.begin(), original_range.end(), f3);
         t0_a = mysecond() - t0_a;
         timing[0][iteration] += t0_a;        
 
-        double t1_a = mysecond();
-        
-//DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:
-	hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, hpx::parallel::prefetching_distance_determination({hpx::get_os_thread_count(), 2, 2, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0}), a, b, c), 
+        double t1_a = mysecond();        
+	    hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, prefetch_distance_factor, a, b, c), 
            original_range.begin(), original_range.end(), f3);
         t1_a = mysecond() - t1_a;
         timing[1][iteration] += t1_a;
 
-        double t2_a = mysecond();
-        
-//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
-	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 2, 2, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0})),  original_range.begin(), original_range.end(), f3);
+        double t2_a = mysecond();        
+	    hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::adaptive_chunk_size()),  
+            original_range.begin(), original_range.end(), f3);
         t2_a = mysecond() - t2_a;
         timing[2][iteration] += t2_a;
 
@@ -409,22 +406,19 @@ numa_domain_worker(std::size_t domain,
         timing[0][iteration] += t0_t;
 
         // [2] Triad_prefetch_for_each 
-        double t1_t = mysecond();
-        
-//DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:
-	hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, hpx::parallel::prefetching_distance_determination({hpx::get_os_thread_count(), 3, 3, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0}), a, b, c),
+        double t1_t = mysecond();        
+	    hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, prefetch_distance_factor, a, b, c),
            original_range.begin(), original_range.end(), f4);
         t1_t = mysecond() - t1_t;
         timing[1][iteration] += t1_t;
 
         // [3] Triad adaptive_chunk_size_for_each
-        double t2_t = mysecond();
-        
-//DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
-	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 3, 3, 0, std::size_t(std::distance(original_range.begin(), original_range.end())), 0})),  original_range.begin(), original_range.end(), f4);
+        double t2_t = mysecond();        
+	    hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::adaptive_chunk_size()),  
+            original_range.begin(), original_range.end(), f4);
         t2_t = mysecond() - t2_t;
         timing[2][iteration] += t2_t;
-
+        */
         ////////////////////////////////////////////////////////////////
     }
 
@@ -597,8 +591,9 @@ int hpx_main(boost::program_options::variables_map& vm)
     // --- SUMMARY --- 
     const char *label[3] = {
         "original_for_each:                       ", //with normal iterator
-        "prefetch_for_each:                       ", //with prfetching itr
-        "chunk_size_for_each:                     "  //with adaptive_chunk_size
+        "chunk_size_for_each:                     ",  //with adaptive_chunk_size
+        "prefetch_for_each:                       " //with prfetching itr
+        
     };
 
     const double bytes[3] = {

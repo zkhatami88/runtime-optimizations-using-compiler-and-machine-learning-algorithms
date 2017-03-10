@@ -134,12 +134,19 @@ void comparing_perfromances(std::vector<T>& A, std::vector<T>& B, std::vector<T>
 
     ////////////////////////////////////////////////////////////////////////
     // Printing results
-    std::cout << std::left << std::setw(6) << std::setfill(' ') << "time_origin = ";
-    std::cout << std::left << std::setw(6) << std::setfill(' ') << elapsed_origin;
-    std::cout << std::left << std::setw(6) << std::setfill(' ') << "\ntime_chunk = ";
-    std::cout << std::left << std::setw(6) << std::setfill(' ') << elapsed_chunk;
-    std::cout << std::left << std::setw(6) << std::setfill(' ') << "\ntime_prefetching = ";
-    std::cout << std::left << std::setw(6) << std::setfill(' ') << elapsed_prefetch << std::endl;
+
+    double byte = 0.25 * vector_size * (16 + 
+        (vector_size * ((7 + 3 * 8) + (8 + 3 * 9) + (8 + 3 * 9) + (8 + 3 * 9))) + 
+        ((3 + 3 * 4) + (4 + 3 * 5) + (4 + 3 * 5) + (4 + 3 * 5)));
+
+    // GB
+    std::cout << std::left << "rate_origin = ";
+    std::cout << std::left << ((byte * sizeof(double) * vector_size * vector_size) / (elapsed_origin));
+    std::cout << std::left << "\nrate_chunk = ";
+    std::cout << std::left << ((byte * sizeof(double) * vector_size * vector_size) / (elapsed_chunk));
+    std::cout << std::left << "\nrate_prefetching = ";
+    std::cout << std::left << ((byte * sizeof(double) * vector_size * vector_size) / (elapsed_prefetch)); 
+    std::cout << std::endl;
 }
 
 int hpx_main(int argc, char* argv[])
