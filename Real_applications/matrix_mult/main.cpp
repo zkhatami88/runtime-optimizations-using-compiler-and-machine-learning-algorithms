@@ -25,6 +25,12 @@
 
 #define vector_size 200
 
+
+double mysecond()
+{
+    return hpx::util::high_resolution_clock::now() * 1e-9;
+}
+
 template<typename T>
 void comparing_perfromances(std::vector<T>& A, std::vector<T>& B, std::vector<T>& C) {
 
@@ -102,50 +108,50 @@ void comparing_perfromances(std::vector<T>& A, std::vector<T>& B, std::vector<T>
 
     ////////////////////////////////////////////////////////////////////////
     // [1] Original code implemantion with HPX
-    std::size_t t_origin = hpx::util::high_resolution_clock::now();
+    double t_origin = mysecond();
 
     hpx::parallel::for_each(hpx::parallel::par, time_range.begin(), time_range.end(), f);
 
-    std::size_t elapsed_origin = hpx::util::high_resolution_clock::now() - t_origin;
+    double elapsed_origin = mysecond() - t_origin;
 
     ////////////////////////////////////////////////////////////////////////
     // [2] Efficient chunk size
-    std::size_t t_chunk = hpx::util::high_resolution_clock::now();
+    double t_chunk = mysecond();
 
     
 //DETERMING CHUNK SIZES BASED ON STATIC AND DYNAMIC FEATURES:
 	hpx::parallel::for_each(hpx::parallel::par.with(hpx::parallel::chunk_size_determination({hpx::get_os_thread_count(), 1223706, 320800, 10053, std::size_t(std::distance(time_range.begin(), time_range.end())), 2})),  time_range.begin(), time_range.end(), f);
 
-    std::size_t elapsed_chunk = hpx::util::high_resolution_clock::now() - t_chunk;
+    double elapsed_chunk = mysecond() - t_chunk;
 
     ////////////////////////////////////////////////////////////////////////
     // [3] Prefetching:
     std::size_t pref_dist_fac = 2;
     auto policy = hpx::parallel::par;
 
-    std::size_t t_prefetch = hpx::util::high_resolution_clock::now();
+    double t_prefetch = mysecond();
 
     
 //DETERMING PREFETCHER DISTANCE BASED ON STATIC AND DYNAMIC FEATURES:
 	hpx::parallel::for_each(hpx::parallel::execution::make_prefetcher_policy(policy, hpx::parallel::prefetching_distance_determination({hpx::get_os_thread_count(), 1223706, 320800, 10053, std::size_t(std::distance(time_range.begin(), time_range.end())), 2}), A, B, C), 
        time_range.begin(), time_range.end(), f);
 
-    std::size_t elapsed_prefetch = hpx::util::high_resolution_clock::now() - t_prefetch;
+    double elapsed_prefetch = mysecond() - t_prefetch;
 
     ////////////////////////////////////////////////////////////////////////
     // Printing results
 
-    double byte = 0.25 * vector_size * (16 + 
+    double byte = vector_size * (16 + 
         (vector_size * ((7 + 3 * 8) + (8 + 3 * 9) + (8 + 3 * 9) + (8 + 3 * 9))) + 
         ((3 + 3 * 4) + (4 + 3 * 5) + (4 + 3 * 5) + (4 + 3 * 5)));
 
-    // GB
+    // MB
     std::cout << std::left << "rate_origin = ";
-    std::cout << std::left << ((byte * sizeof(double) * vector_size * vector_size) / (elapsed_origin));
+    std::cout << std::left << (1.0E-09 * (byte * sizeof(double)) / (elapsed_origin)) << " [GB/s]";
     std::cout << std::left << "\nrate_chunk = ";
-    std::cout << std::left << ((byte * sizeof(double) * vector_size * vector_size) / (elapsed_chunk));
+    std::cout << std::left << (1.0E-09 * (byte * sizeof(double)) / (elapsed_chunk)) << " [GB/s]";
     std::cout << std::left << "\nrate_prefetching = ";
-    std::cout << std::left << ((byte * sizeof(double) * vector_size * vector_size) / (elapsed_prefetch)); 
+    std::cout << std::left << (1.0E-09 * (byte * sizeof(double)) / (elapsed_prefetch)) << " [GB/s]"; 
     std::cout << std::endl;
 }
 
