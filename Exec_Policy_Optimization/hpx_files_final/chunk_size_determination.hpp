@@ -37,7 +37,10 @@ namespace hpx { namespace parallel {
             }
         }
 
-        double chunk_size = 0.001 * std::pow(10, determined_class) * features[1];
+        //candidates
+        double candidates[] = {0.001, 0.01, 0.1, 1, 1.1};
+
+        double chunk_size = candidates[determined_class] * features[4];
 
         return hpx::parallel::dynamic_chunk_size(chunk_size);
     }

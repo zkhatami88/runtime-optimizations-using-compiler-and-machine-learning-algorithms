@@ -39,7 +39,7 @@ int hpx_main(int argc, char* argv[])
             for (int j = 0; j < num_rows; ++j)
                 ret[i][k] += m1[i][j] * m2[j][k];
             if (ret[i][k] > 0)
-                ret[i][k] * = 4.3;
+                ret[i][k] *= 4.3;
         }
 
         return ret;

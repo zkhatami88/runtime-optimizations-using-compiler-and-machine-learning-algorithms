@@ -1,6 +1,6 @@
 CHECKER_CMD="/home/zahra/clang-llvm/build/bin/loop-convert /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/creating_data/chunk/main.cpp -- -std=c++11 -I/home/zahra/Projects/HPX/repo -I/home/zahra/Projects/HPX/build -I/home/zahra/Projects/HPX/repo/tests -I/home/zahra/Projects/boost_1_63_0 "
 FILE="../input/data_new.dat"
-MAX_NUM_THREADS=32
+MAX_NUM_THREADS=16
 
 cd build
 

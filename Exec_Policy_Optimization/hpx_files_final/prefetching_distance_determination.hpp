@@ -35,11 +35,13 @@ namespace hpx { namespace parallel {
                 determined_class = w;
             }
         }
+        
+        //candidates
+        std::size_t candidates[] = {10, 50, 100, 500, 1000, 5000};
 
-        std::size_t dist = std::pow(10, determined_class); //* something!
+        std::size_t dist_factor = candidates[determined_class];
 
-        //return dist;
-        return dist;
+        return dist_factor;
     }
 }}
 

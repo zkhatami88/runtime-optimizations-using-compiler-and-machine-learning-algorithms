@@ -114,7 +114,7 @@ void reading_real_input_values_multi(std::size_t number_of_experiments, std::siz
         getline(ss, str, ' ');
 
         //skipping static informations for the first 4 loops for chunk and 5 loops for prefetch 
-        for(int l = 0; l < 5; l++) {
+        for(int l = 0; l < 4; l++) {
             for(int c = 0; c < 4; c++) { //this 4 for both chunk and prefetch
                 getline(ss, str, ' ');
             }
@@ -223,7 +223,7 @@ void implementing_binary_logistic_regression_model(){
 }
 
 void implementing_multinomial_logistic_regression_model(){
-    float threshold = 0.05;
+    float threshold = 0.07;
     std::string line;
     
     //learning multi classes    
@@ -233,7 +233,7 @@ void implementing_multinomial_logistic_regression_model(){
 
     //reading input data : number of experiments, number of feautures and number of output_classes in each experiments
     //std::ifstream myfile ("inputs/data_prefetch.dat");
-    std::ifstream myfile ("inputs/data_prefetch_2.dat");
+    std::ifstream myfile ("inputs/data_chunk_3.dat");
     
     getline(myfile, line);
     std::stringstream ss(line);

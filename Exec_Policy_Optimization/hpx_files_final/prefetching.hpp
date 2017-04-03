@@ -236,14 +236,12 @@ namespace hpx { namespace parallel { namespace util
 
             prefetching_iterator<Itr, Ts...> begin()
             {
-                std::cout<<"b\n";
                 return prefetching_iterator<Itr, Ts...>(
                     0ull, it_begin_, chunk_size_, range_size_, rngs_);
             }
 
             prefetching_iterator<Itr, Ts...> end()
             {
-                std::cout<<"c\n";
                 return prefetching_iterator<Itr, Ts...>(
                     range_size_, it_end_, chunk_size_, range_size_, rngs_);
             }
@@ -294,7 +292,6 @@ namespace hpx { namespace parallel { namespace util
             static iterator_type
             call(iterator_type it, End end, F && f)
             {
-                std::cout<<"d1\n";
                 for (/**/; it != end; ++it)
                 {
                     Itr base = it.base();
@@ -316,7 +313,6 @@ namespace hpx { namespace parallel { namespace util
             static iterator_type
             call(iterator_type it, End end, CancelToken& tok, F && f)
             {
-                std::cout<<"d2\n";
                 for (/**/; it != end; ++it)
                 {
                     if (tok.was_cancelled())
@@ -352,7 +348,6 @@ namespace hpx { namespace parallel { namespace util
             static iterator_type
             call(iterator_type it, std::size_t count, F && f)
             {
-                std::cout<<"d3\n";
                 for (/**/; count != 0; (void) --count, ++it)
                 {
                     Itr base = it.base();
@@ -374,7 +369,6 @@ namespace hpx { namespace parallel { namespace util
             static iterator_type
             call(iterator_type it, std::size_t count, CancelToken& tok, F && f)
             {
-                std::cout<<"d4\n";
                 for (/**/; count != 0; (void) --count, ++it)
                 {
                     if (tok.was_cancelled())
@@ -399,6 +393,7 @@ namespace hpx { namespace parallel { namespace util
 
     ///////////////////////////////////////////////////////////////////////////
     // function to create a prefetcher_context
+    //NEW
     template <typename Itr, typename ... Ts>
     detail::prefetcher_context<Itr, Ts const...>
     make_prefetcher_context(Itr base_begin, Itr base_end,
@@ -408,11 +403,31 @@ namespace hpx { namespace parallel { namespace util
             hpx::traits::is_random_access_iterator<Itr>::value,
             "Iterators have to be of random access iterator category");
 
-        std::cout<<"a\n";
-        
         return detail::prefetcher_context<Itr, Ts const...>(
             base_begin, base_end, std::move(rngs), p_factor);
     }
+
+    /*
+    //OLD
+    template <typename Itr, typename ... Ts>
+    detail::prefetcher_context<Itr, Ts const...>
+    make_prefetcher_context(Itr base_begin, Itr base_end,
+        std::size_t p_factor, Ts const& ... rngs)
+    {
+        static_assert(
+            hpx::traits::is_random_access_iterator<Itr>::value,
+            "Iterators have to be of random access iterator category");
+        static_assert(
+            hpx::util::detail::all_of<hpx::traits::is_range<Ts>...>::value,
+            "All variadic parameters have to represent ranges");
+
+        typedef hpx::util::tuple<std::reference_wrapper<Ts const>...> ranges_type;
+
+        auto && ranges = ranges_type(std::cref(rngs)...);
+        return detail::prefetcher_context<Itr, Ts const...>(
+            base_begin, base_end, std::move(ranges), p_factor);
+    }
+    */
 }}}
 
 #endif

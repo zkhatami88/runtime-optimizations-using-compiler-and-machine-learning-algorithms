@@ -470,16 +470,14 @@ namespace hpx { namespace parallel { HPX_INLINE_NAMESPACE(v1)
     for_each(hpx::parallel::execution::prefetching_policy<ExPolicy, Ts ...> && policy, 
         InIter first, InIter last, F && f)
     {
-        std::cout << "Heyyy \n";
-
         auto prefetcher_context = util::make_prefetcher_context(first, last, 
                                     policy.get_prefetching_distance_factor(), 
                                     std::move(policy.get_ranges()));
-        
+
         // Executing loop on policy while prefetching containers with a loop
         auto && current_policy = policy.get_policy();       
         for_each(
-            std::forward<hpx::parallel::execution::parallel_policy>(current_policy), 
+            std::forward<ExPolicy>(current_policy), 
             prefetcher_context.begin(), prefetcher_context.end(), 
             std::forward<F>(f));
     }

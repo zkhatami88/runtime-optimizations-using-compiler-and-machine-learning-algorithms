@@ -120,13 +120,20 @@ namespace checker_detail
         // get the initial value
         const Stmt* init_stmt = for_stmt->getInit(); 
         const DeclStmt* init_decl = cast<DeclStmt>(init_stmt);
-        const IntegerLiteral* init_literal =
-            cast<IntegerLiteral>(*(init_decl->child_begin()));
-        llvm::APInt initial_value = init_literal->getValue();
 
         // get the condition value
         const Expr* cond_expr = for_stmt->getCond();
         const BinaryOperator* cond_op = cast<BinaryOperator>(cond_expr);
+
+        // if initial statement or upperbound is a variable type
+        if(!isa<IntegerLiteral>(*(init_decl->child_begin())) || !isa<IntegerLiteral>(cond_op->getRHS())) {
+            ++stats.num_func_calls;
+            return 1;
+        }
+
+        const IntegerLiteral* init_literal =
+            cast<IntegerLiteral>(*(init_decl->child_begin()));
+        llvm::APInt initial_value = init_literal->getValue();
 
         const IntegerLiteral* cond_literal =
             cast<IntegerLiteral>(cond_op->getRHS());
@@ -246,7 +253,7 @@ public:
              
             //extracting information and modifying user's code
             if (call->getNumArgs() >= 4 ) 
-            {
+            { 
                 // Extracting policy as string
                 SourceRange policy(call->getArg(0)->getExprLoc(), 
                                     call->getArg(1)->getExprLoc().getLocWithOffset(-2));
@@ -255,11 +262,11 @@ public:
                     Lexer::getSourceText(
                         CharSourceRange::getCharRange(policy), SM,
                         LangOptions()
-                    ).str();
+                ).str();
 
                 ///////////////////////////////////////////////////////////////////
                 /*
-                //for tests
+                //for tests & creating training data:                
                 for (auto it = call->arg_begin(); it != call->arg_end(); ++it)
                 {   
                     if (isa<DeclRefExpr>(*it))
@@ -281,13 +288,13 @@ public:
                         // Printing out the extracted data
                         llvm::outs() << stats;
                     }
-                }*/
+                }
+                */
+                /////////////////////////////////////////////////////////////////// 
 
-                ///////////////////////////////////////////////////////////////////            
-                // Determining if policy is par_if 
-                                   
+                // Determining if policy is par_if                
                 if (policy_string.find("par_if") != std::string::npos)
-                {                    
+                {                
                     policy_determination(call, SM, stats);  
                 }
 
@@ -304,7 +311,7 @@ public:
                 {     
                     prefethcer_distance_determination(call, SM, stats);  
                 }
-
+                
             }
         }
                 
@@ -725,7 +732,7 @@ private:
                                     policy_prefix + 
                                     ", hpx::parallel::prefetching_distance_determination(" +
                                     data + ")" + 
-                                    tuple + ", " +
+                                    tuple + 
                                     ref2.str();
 
 
@@ -762,7 +769,12 @@ public:
     std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                                  StringRef file) override 
     {
-        const std::string fName = "hpx::parallel::";
+        //for tests & creating training data:
+        //const std::string fName = "hpx::parallel::v1::for_each";
+
+        //for learning:
+        const std::string fName = "hpx::parallel";
+
         return llvm::make_unique<MyASTConsumer>(&CI.getASTContext(), fName);
     }
 

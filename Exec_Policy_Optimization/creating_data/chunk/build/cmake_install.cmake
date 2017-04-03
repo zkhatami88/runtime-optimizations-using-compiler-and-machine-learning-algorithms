@@ -1,4 +1,4 @@
-# Install script for directory: /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/creating_data
+# Install script for directory: /home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/creating_data/chunk
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,7 +39,7 @@ if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMP
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/main"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/creating_data/build/main")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/creating_data/chunk/build/main")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/main" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/main")
     file(RPATH_CHANGE
@@ -60,5 +60,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/creating_data/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/zahra/Desktop/runtime_opt_with_compiler_and_ML/Exec_Policy_Optimization/creating_data/chunk/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

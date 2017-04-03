@@ -32,12 +32,12 @@ int hpx_main(int argc, char* argv[])
     std::cout << std::distance(r.begin(), r.end()) << " ";
 
     auto policy = hpx::parallel::par;
-    std::size_t dist1 = 1;
-    std::size_t dist2 = 5;
-    std::size_t dist3 = 10;
-    std::size_t dist4 = 50;
-    std::size_t dist5 = 100;
-    std::size_t dist6 = 500;
+    std::size_t dist1 = 5;
+    std::size_t dist2 = 50;
+    std::size_t dist3 = 100;
+    std::size_t dist4 = 500;
+    std::size_t dist5 = 1000;
+    std::size_t dist6 = 5000;
     
    
     hpx::util::high_resolution_timer t1;
